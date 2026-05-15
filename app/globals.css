@@ -648,6 +648,108 @@ svg {
   border-color: var(--pitch-200);
 }
 
+/* Confidence-based card accents — visible left border so high-confidence
+   tips stand out when scrolling. */
+.card-link--confidence-high {
+  border-left: 4px solid var(--pitch-500);
+}
+
+.card-link--confidence-mid {
+  border-left: 4px solid var(--gold-400);
+}
+
+.card-link--confidence-low {
+  border-left: 4px solid #fb923c;
+}
+
+/* Consensus indicator — when 2+ tipsters back the same match. */
+.consensus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background: var(--slate-100);
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--slate-600);
+}
+
+/* Active-filter chips below the filter panel */
+.filter-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.25rem 0.25rem 0.625rem;
+  background: var(--pitch-50);
+  border: 1px solid var(--pitch-200);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--pitch-800);
+}
+
+.filter-chip strong {
+  color: var(--pitch-700);
+  margin-right: 0.125rem;
+}
+
+.filter-chip-remove {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: var(--pitch-700);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.filter-chip-remove:hover {
+  background: var(--pitch-200);
+  color: var(--pitch-900);
+}
+
+/* Share button on tip detail */
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--white);
+  color: var(--pitch-700);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.share-button:hover {
+  background: var(--pitch-50);
+  border-color: var(--pitch-300);
+}
+
+.share-button.is-copied {
+  background: var(--pitch-100);
+  color: var(--pitch-800);
+  border-color: var(--pitch-300);
+}
+
 .card-link-title {
   font-family: var(--font-display);
   font-size: 1.125rem;

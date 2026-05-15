@@ -3,6 +3,7 @@ import {
   bestOddsForTip,
   getMatchById,
   getTeamByCode,
+  getTipsByMatch,
   getTipsterBySlug,
   type Tip,
 } from "@/lib/data";
@@ -32,12 +33,25 @@ export default function TipCard({ tip }: { tip: Tip }) {
   const best = bestOddsForTip(tip);
   const variant = MARKET_VARIANT[tip.market];
 
+  const confidenceClass =
+    tip.confidence >= 5 ? "card-link card-link--confidence-high"
+    : tip.confidence >= 3 ? "card-link card-link--confidence-mid"
+    : "card-link card-link--confidence-low";
+
+  // Consensus = how many other tipsters have a tip on this same match.
+  const consensusCount = getTipsByMatch(match.id).length - 1;
+
   return (
-    <Link href={`/tips/${tip.slug}`} className="card-link">
+    <Link href={`/tips/${tip.slug}`} className={confidenceClass}>
       <div className="badge-row">
         <span className="group-chip" aria-label={`Group ${match.group}`}>{match.group}</span>
         <Badge variant={variant}>{tip.market}</Badge>
         {tip.isPremium ? <Badge variant="gold">Premium</Badge> : null}
+        {consensusCount > 0 ? (
+          <span className="consensus-chip" title={`${consensusCount} other tipster${consensusCount === 1 ? "" : "s"} on this match`}>
+            👥 +{consensusCount} more
+          </span>
+        ) : null}
       </div>
 
       <div className="tip-match">

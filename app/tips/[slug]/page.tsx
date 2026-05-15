@@ -13,6 +13,7 @@ import Countdown from "@/components/Countdown";
 import BookmakerOddsTable from "@/components/BookmakerOddsTable";
 import Flag from "@/components/Flag";
 import Avatar from "@/components/Avatar";
+import ShareButton from "@/components/ShareButton";
 
 export default async function TipDetailPage({
   params,
@@ -60,15 +61,18 @@ export default async function TipDetailPage({
           <Countdown kickoffISO={match.kickoffISO} />
         </div>
 
-        <h1 className="title-display" style={{ display: "flex", alignItems: "center", gap: "0.625rem", flexWrap: "wrap" }}>
-          <Flag code={home.flag} alt={home.name} width={32} />
-          <span className="team-code">{home.code}</span>
-          {home.name}
-          <span className="tip-match-vs">vs</span>
-          {away.name}
-          <span className="team-code">{away.code}</span>
-          <Flag code={away.flag} alt={away.name} width={32} />
-        </h1>
+        <div className="row-between" style={{ alignItems: "flex-start", gap: "1rem" }}>
+          <h1 className="title-display" style={{ display: "flex", alignItems: "center", gap: "0.625rem", flexWrap: "wrap" }}>
+            <Flag code={home.flag} alt={home.name} width={32} />
+            <span className="team-code">{home.code}</span>
+            {home.name}
+            <span className="tip-match-vs">vs</span>
+            {away.name}
+            <span className="team-code">{away.code}</span>
+            <Flag code={away.flag} alt={away.name} width={32} />
+          </h1>
+          <ShareButton path={`/tips/${tip.slug}`} />
+        </div>
         <p className="text-muted max-prose" style={{ marginTop: "0.5rem" }}>
           {dateString} · {timeString} · {match.stadium}, {match.city}
         </p>

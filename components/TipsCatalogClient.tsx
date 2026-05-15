@@ -235,12 +235,59 @@ export default function TipsCatalogClient({
           </div>
         </div>
 
+        {isFiltering ? (
+          <div className="filter-chips-row">
+            {query ? (
+              <span className="filter-chip">
+                <strong>Search:</strong> {query}
+                <button type="button" className="filter-chip-remove" onClick={() => setQuery("")} aria-label="Clear search">✕</button>
+              </span>
+            ) : null}
+            {group !== "all" ? (
+              <span className="filter-chip">
+                <strong>Group:</strong> {group}
+                <button type="button" className="filter-chip-remove" onClick={() => setGroup("all")} aria-label="Clear group filter">✕</button>
+              </span>
+            ) : null}
+            {tipster !== "all" ? (
+              <span className="filter-chip">
+                <strong>Tipster:</strong> {tipsters.find((t) => t.slug === tipster)?.name ?? tipster}
+                <button type="button" className="filter-chip-remove" onClick={() => setTipster("all")} aria-label="Clear tipster filter">✕</button>
+              </span>
+            ) : null}
+            {market !== "all" ? (
+              <span className="filter-chip">
+                <strong>Market:</strong> {market}
+                <button type="button" className="filter-chip-remove" onClick={() => setMarket("all")} aria-label="Clear market filter">✕</button>
+              </span>
+            ) : null}
+            {oddsBucket !== "all" ? (
+              <span className="filter-chip">
+                <strong>Odds:</strong> {
+                  oddsBucket === "lt-1.5" ? "Under 1.50"
+                  : oddsBucket === "1.5-2.0" ? "1.50–2.00"
+                  : oddsBucket === "2.0-3.0" ? "2.00–3.00"
+                  : oddsBucket === "gt-3.0" ? "3.00+"
+                  : oddsBucket
+                }
+                <button type="button" className="filter-chip-remove" onClick={() => setOddsBucket("all")} aria-label="Clear odds filter">✕</button>
+              </span>
+            ) : null}
+            {bookmaker !== "all" ? (
+              <span className="filter-chip">
+                <strong>Best @:</strong> {bookmakers.find((b) => b.slug === bookmaker)?.name ?? bookmaker}
+                <button type="button" className="filter-chip-remove" onClick={() => setBookmaker("all")} aria-label="Clear bookmaker filter">✕</button>
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="filter-bar">
           <span className="filter-bar-meta">
             Showing <strong>{sorted.length}</strong> of <strong>{tips.length}</strong> tips
           </span>
           {isFiltering ? (
-            <button className="btn-link" onClick={reset}>Reset filters</button>
+            <button className="btn-link" onClick={reset}>Reset all</button>
           ) : null}
         </div>
       </div>
