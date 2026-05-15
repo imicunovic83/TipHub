@@ -59,17 +59,21 @@ export default function TipCard({ tip }: { tip: Tip }) {
       </div>
 
       <div className="tip-match">
-        <span className="tip-match-team">
-          <Flag code={home.flag} alt={home.name} width={22} />
-          <span className="team-code">{home.code}</span>
-          <span className="tip-match-team-name">{home.name}</span>
-        </span>
+        <div className="tip-match-side">
+          <div className="tip-match-side-meta">
+            <Flag code={home.flag} alt={home.name} width={22} />
+            <span className="team-code">{home.code}</span>
+          </div>
+          <div className="tip-match-side-name">{home.name}</div>
+        </div>
         <span className="tip-match-vs">vs</span>
-        <span className="tip-match-team tip-match-team--away">
-          <span className="tip-match-team-name">{away.name}</span>
-          <span className="team-code">{away.code}</span>
-          <Flag code={away.flag} alt={away.name} width={22} />
-        </span>
+        <div className="tip-match-side tip-match-side--away">
+          <div className="tip-match-side-meta">
+            <span className="team-code">{away.code}</span>
+            <Flag code={away.flag} alt={away.name} width={22} />
+          </div>
+          <div className="tip-match-side-name">{away.name}</div>
+        </div>
       </div>
 
       <div className="tip-prediction">
