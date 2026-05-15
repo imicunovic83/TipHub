@@ -1,19 +1,32 @@
 import Link from "next/link";
-import { getBookmakerStats, getAllTips } from "@/lib/data";
+import { bestOddsForTip, getBookmakerStats, getAllTips, type Bookmaker, type Tip } from "@/lib/data";
 import SectionTitle from "@/components/SectionTitle";
 import BookmakerLogo from "@/components/BookmakerLogo";
 import TipCard from "@/components/TipCard";
 
 export default function BookmakersPage() {
   const stats = getBookmakerStats();
-  const totalTips = getAllTips().length;
+  const allTips = getAllTips();
+  const totalTips = allTips.length;
 
   // Rank by bestCount descending so the most-generous bookmaker appears first.
   const ranked = [...stats].sort((a, b) => b.bestCount - a.bestCount);
   const maxBestCount = Math.max(...ranked.map((s) => s.bestCount), 1);
 
-  // The single best tip across the entire site (highest odds anywhere).
-  const headline = ranked[0];
+  // The single highest-odds tip across the entire site, regardless of which
+  // bookmaker offers it. Iterates over every tip, takes its best price, then
+  // keeps the maximum.
+  let absoluteTopTip: Tip | undefined;
+  let absoluteTopOdds = 0;
+  let absoluteTopBookmaker: Bookmaker | undefined;
+  for (const t of allTips) {
+    const best = bestOddsForTip(t);
+    if (best.value > absoluteTopOdds) {
+      absoluteTopOdds = best.value;
+      absoluteTopTip = t;
+      absoluteTopBookmaker = best.bookmaker;
+    }
+  }
 
   return (
     <section className="pad-section">
@@ -114,14 +127,15 @@ export default function BookmakersPage() {
           ))}
         </div>
 
-        {headline && headline.topTips.length > 0 ? (
+        {absoluteTopTip && absoluteTopBookmaker ? (
           <div>
             <h2 className="title-section">Highest-odds tip on the entire board</h2>
             <p className="text-muted" style={{ marginTop: 0 }}>
-              {headline.bookmaker.name} offers the longest single price across every active tip:
+              The longest single price anywhere on the site right now:{" "}
+              <strong>{absoluteTopOdds.toFixed(2)}</strong> at <strong>{absoluteTopBookmaker.name}</strong>.
             </p>
             <div className="grid-cards">
-              <TipCard tip={headline.topTips[0]} />
+              <TipCard tip={absoluteTopTip} />
             </div>
           </div>
         ) : null}
