@@ -502,8 +502,36 @@ svg {
 
 .grid-filters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.875rem;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+@media (max-width: 1100px) {
+  .grid-filters {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.grid-filters .input,
+.grid-filters .select,
+.grid-filters .btn {
+  padding: 0.5rem 0.625rem;
+  font-size: 0.85rem;
+  min-width: 0;
+}
+
+.grid-filters .field-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .field {
@@ -1468,6 +1496,150 @@ body {
   padding-bottom: 5rem;
 }
 
+/* ============================================================
+   Mobile hamburger menu — hidden on desktop, replaces the inline
+   nav + search bar at narrow widths.
+   ============================================================ */
+.hamburger-btn {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.625rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-icon {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 18px;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 2px;
+  background: var(--slate-700);
+  border-radius: 1px;
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+.hamburger-icon.is-open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.hamburger-icon.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon.is-open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.mobile-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 60;
+}
+
+.mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(320px, 85vw);
+  z-index: 61;
+  background: var(--white);
+  border-left: 1px solid var(--border);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: mobile-menu-in .2s ease-out;
+  box-shadow: -10px 0 24px rgb(0 0 0 / 0.12);
+}
+
+@keyframes mobile-menu-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.mobile-menu-search {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mobile-menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mobile-menu-link {
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  color: var(--slate-700);
+  font-size: 1rem;
+}
+
+.mobile-menu-link:hover {
+  background: var(--slate-100);
+  color: var(--pitch-800);
+}
+
+.mobile-menu-link.is-active {
+  background: var(--pitch-50);
+  color: var(--pitch-800);
+}
+
+.mobile-menu-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 720px) {
+  .hamburger-btn {
+    display: inline-flex;
+  }
+  .site-nav {
+    display: none !important;
+  }
+  .header-search {
+    display: none;
+  }
+  .site-header-inner {
+    justify-content: space-between;
+  }
+}
+
+[data-theme="dark"] .mobile-menu-panel {
+  background: #1a2332;
+  border-left-color: #1f2937;
+}
+
+[data-theme="dark"] .hamburger-btn {
+  border-color: #334155;
+}
+
+[data-theme="dark"] .hamburger-icon span {
+  background: #cbd5e1;
+}
+
+[data-theme="dark"] .mobile-menu-link:hover,
+[data-theme="dark"] .mobile-menu-link.is-active {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
 .card-link-title {
   font-family: var(--font-display);
   font-size: 1.125rem;
@@ -1534,7 +1706,7 @@ body {
 /* Tip card specifics */
 .tip-match {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 0;
@@ -1548,6 +1720,14 @@ body {
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--slate-800);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tip-match-team-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   min-width: 0;
 }
 

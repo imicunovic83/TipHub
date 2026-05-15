@@ -62,11 +62,11 @@ export default function TipCard({ tip }: { tip: Tip }) {
         <span className="tip-match-team">
           <Flag code={home.flag} alt={home.name} width={22} />
           <span className="team-code">{home.code}</span>
-          {home.name}
+          <span className="tip-match-team-name">{home.name}</span>
         </span>
         <span className="tip-match-vs">vs</span>
         <span className="tip-match-team tip-match-team--away">
-          {away.name}
+          <span className="tip-match-team-name">{away.name}</span>
           <span className="team-code">{away.code}</span>
           <Flag code={away.flag} alt={away.name} width={22} />
         </span>

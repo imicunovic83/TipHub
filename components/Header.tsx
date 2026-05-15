@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import FavoritesCounter from "@/components/FavoritesCounter";
+import MobileMenu from "@/components/MobileMenu";
 
 export default function Header() {
   return (
@@ -32,6 +33,8 @@ export default function Header() {
           <FavoritesCounter />
           <ThemeToggle />
         </nav>
+
+        <MobileMenu />
       </div>
     </header>
   );
