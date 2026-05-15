@@ -1,4 +1,5 @@
 import { bestOddsForTip, getBookmakerBySlug, type Tip } from "@/lib/data";
+import BookmakerLogo from "@/components/BookmakerLogo";
 
 export default function BookmakerOddsTable({ tip }: { tip: Tip }) {
   const best = bestOddsForTip(tip);
@@ -24,7 +25,7 @@ export default function BookmakerOddsTable({ tip }: { tip: Tip }) {
             <tr key={offer.bookmaker} className={isBest ? "odds-row--best" : undefined}>
               <td>
                 <span className="odds-bookmaker">
-                  <span className="odds-bookmaker-logo">{bm.shortCode}</span>
+                  <BookmakerLogo bookmaker={bm} />
                   {bm.name}
                   {isBest ? <span className="odds-best-tag">Best</span> : null}
                 </span>

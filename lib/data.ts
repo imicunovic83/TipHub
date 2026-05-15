@@ -28,7 +28,8 @@ export type BookmakerSlug =
 export interface Bookmaker {
   slug: BookmakerSlug;
   name: string;
-  shortCode: string; // 2-3 letters used in the rounded logo cell
+  shortCode: string;   // 2-3 letters used in the rounded logo cell
+  brandColor: string;  // hex used as background of the logo cell
   country: string;
 }
 
@@ -91,11 +92,11 @@ export interface Tip {
 // Bookmakers (5 real Serbian operators)
 // ---------------------------------------------------------------------------
 export const bookmakers: Bookmaker[] = [
-  { slug: "mozzart",   name: "Mozzart Bet", shortCode: "MZ", country: "Serbia" },
-  { slug: "maxbet",    name: "Maxbet",      shortCode: "MX", country: "Serbia" },
-  { slug: "soccerbet", name: "Soccerbet",   shortCode: "SB", country: "Serbia" },
-  { slug: "meridian",  name: "Meridianbet", shortCode: "ME", country: "Serbia" },
-  { slug: "admiral",   name: "Admiral Bet", shortCode: "AD", country: "Serbia" },
+  { slug: "mozzart",   name: "Mozzart Bet", shortCode: "MZ", brandColor: "#c8102e", country: "Serbia" },
+  { slug: "maxbet",    name: "Maxbet",      shortCode: "MX", brandColor: "#f59e0b", country: "Serbia" },
+  { slug: "soccerbet", name: "Soccerbet",   shortCode: "SB", brandColor: "#1e8449", country: "Serbia" },
+  { slug: "meridian",  name: "Meridianbet", shortCode: "ME", brandColor: "#1e40af", country: "Serbia" },
+  { slug: "admiral",   name: "Admiral Bet", shortCode: "AD", brandColor: "#334155", country: "Serbia" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -118,7 +119,7 @@ export const teams: Team[] = [
   // Group C
   { code: "BRA", name: "Brazil",         group: "C", flag: "BR" },
   { code: "MAR", name: "Morocco",        group: "C", flag: "MA" },
-  { code: "SCO", name: "Scotland",       group: "C", flag: "SC" },
+  { code: "SCO", name: "Scotland",       group: "C", flag: "GB-SCT" },
   { code: "HAI", name: "Haiti",          group: "C", flag: "HT" },
 
   // Group D
@@ -170,7 +171,7 @@ export const teams: Team[] = [
   { code: "COL", name: "Colombia",       group: "K", flag: "CO" },
 
   // Group L
-  { code: "ENG", name: "England",        group: "L", flag: "EN" },
+  { code: "ENG", name: "England",        group: "L", flag: "GB-ENG" },
   { code: "CRO", name: "Croatia",        group: "L", flag: "HR" },
   { code: "GHA", name: "Ghana",          group: "L", flag: "GH" },
   { code: "PAN", name: "Panama",         group: "L", flag: "PA" },

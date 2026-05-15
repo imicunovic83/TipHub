@@ -9,6 +9,8 @@ import {
 import { Badge } from "@/components/Badge";
 import ConfidenceStars from "@/components/ConfidenceStars";
 import Countdown from "@/components/Countdown";
+import Flag from "@/components/Flag";
+import BookmakerLogo from "@/components/BookmakerLogo";
 
 const MARKET_VARIANT = {
   "1X2": "pitch",
@@ -40,13 +42,13 @@ export default function TipCard({ tip }: { tip: Tip }) {
 
       <div className="tip-match">
         <span className="tip-match-team">
-          <span className="tip-match-team-flag">{home.flag}</span>
+          <Flag code={home.flag} alt={home.name} width={22} />
           {home.name}
         </span>
         <span className="tip-match-vs">vs</span>
         <span className="tip-match-team tip-match-team--away">
           {away.name}
-          <span className="tip-match-team-flag">{away.flag}</span>
+          <Flag code={away.flag} alt={away.name} width={22} />
         </span>
       </div>
 
@@ -62,6 +64,7 @@ export default function TipCard({ tip }: { tip: Tip }) {
 
       <div className="tip-meta-row">
         <span className="tip-best-bookmaker">
+          <BookmakerLogo bookmaker={best.bookmaker} size={18} />
           Best @ <strong>{best.bookmaker.name}</strong>
         </span>
         <ConfidenceStars value={tip.confidence} />

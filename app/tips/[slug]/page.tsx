@@ -11,6 +11,7 @@ import { Badge } from "@/components/Badge";
 import ConfidenceStars from "@/components/ConfidenceStars";
 import Countdown from "@/components/Countdown";
 import BookmakerOddsTable from "@/components/BookmakerOddsTable";
+import Flag from "@/components/Flag";
 
 export default async function TipDetailPage({
   params,
@@ -58,8 +59,12 @@ export default async function TipDetailPage({
           <Countdown kickoffISO={match.kickoffISO} />
         </div>
 
-        <h1 className="title-display">
-          {home.name} vs {away.name}
+        <h1 className="title-display" style={{ display: "flex", alignItems: "center", gap: "0.625rem", flexWrap: "wrap" }}>
+          <Flag code={home.flag} alt={home.name} width={32} />
+          {home.name}
+          <span className="tip-match-vs">vs</span>
+          {away.name}
+          <Flag code={away.flag} alt={away.name} width={32} />
         </h1>
         <p className="text-muted max-prose" style={{ marginTop: "0.5rem" }}>
           {dateString} · {timeString} · {match.stadium}, {match.city}
