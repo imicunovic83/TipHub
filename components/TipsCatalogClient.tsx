@@ -14,6 +14,7 @@ import {
 } from "@/lib/data";
 import TipCard from "@/components/TipCard";
 import { useFavorites } from "@/lib/useFavorites";
+import MatchdayTimeline from "@/components/MatchdayTimeline";
 
 type SortKey = "kickoff" | "odds-desc" | "odds-asc" | "confidence" | "tipster-rate";
 
@@ -38,6 +39,7 @@ export default function TipsCatalogClient({
   const [bookmaker, setBookmaker] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("kickoff");
   const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
+  const [matchday, setMatchday] = useState<string | "all">("all");
 
   const { favorites, hydrated: favHydrated } = useFavorites();
   const searchParams = useSearchParams();
@@ -100,9 +102,11 @@ export default function TipsCatalogClient({
 
       if (favoritesOnly && favHydrated && !favorites.has(t.id)) return false;
 
+      if (matchday !== "all" && match.kickoffISO.slice(0, 10) !== matchday) return false;
+
       return true;
     });
-  }, [tips, query, group, tipster, market, oddsBucket, bookmaker, bookmakers, favoritesOnly, favorites, favHydrated]);
+  }, [tips, query, group, tipster, market, oddsBucket, bookmaker, bookmakers, favoritesOnly, favorites, favHydrated, matchday]);
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -131,7 +135,7 @@ export default function TipsCatalogClient({
 
   const isFiltering =
     query !== "" || group !== "all" || tipster !== "all" || market !== "all" ||
-    oddsBucket !== "all" || bookmaker !== "all" || favoritesOnly;
+    oddsBucket !== "all" || bookmaker !== "all" || favoritesOnly || matchday !== "all";
 
   const reset = () => {
     setQuery("");
@@ -141,10 +145,13 @@ export default function TipsCatalogClient({
     setOddsBucket("all");
     setBookmaker("all");
     setFavoritesOnly(false);
+    setMatchday("all");
   };
 
   return (
     <div className="stack-md">
+      <MatchdayTimeline selected={matchday} onSelect={setMatchday} />
+
       <div className="panel">
         <div className="grid-filters">
           <div className="field">
@@ -314,6 +321,12 @@ export default function TipsCatalogClient({
               <span className="filter-chip">
                 <strong>Saved:</strong> only
                 <button type="button" className="filter-chip-remove" onClick={() => setFavoritesOnly(false)} aria-label="Clear favorites filter">✕</button>
+              </span>
+            ) : null}
+            {matchday !== "all" ? (
+              <span className="filter-chip">
+                <strong>Date:</strong> {matchday}
+                <button type="button" className="filter-chip-remove" onClick={() => setMatchday("all")} aria-label="Clear date filter">✕</button>
               </span>
             ) : null}
           </div>

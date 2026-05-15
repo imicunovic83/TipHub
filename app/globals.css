@@ -1143,6 +1143,331 @@ svg {
   border-color: #047857;
 }
 
+/* Matchday timeline above the catalog */
+.matchday-timeline {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+
+.matchday-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.5rem 0.875rem;
+  min-width: 92px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+  scroll-snap-align: start;
+}
+
+.matchday-pill:hover {
+  border-color: var(--pitch-300);
+}
+
+.matchday-pill.is-active {
+  background: var(--pitch-700);
+  border-color: var(--pitch-800);
+  color: var(--white);
+}
+
+.matchday-pill-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.matchday-pill-count {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--pitch-700);
+}
+
+.matchday-pill.is-active .matchday-pill-count {
+  color: var(--gold-200);
+}
+
+[data-theme="dark"] .matchday-pill {
+  background: #1a2332;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .matchday-pill:hover {
+  border-color: var(--pitch-200);
+}
+
+/* "+ Slip" button at the bottom of every TipCard */
+.slip-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--white);
+  color: var(--pitch-700);
+  border: 1px solid var(--pitch-300);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.slip-add-btn:hover {
+  background: var(--pitch-50);
+}
+
+.slip-add-btn.is-in {
+  background: var(--pitch-700);
+  color: var(--white);
+  border-color: var(--pitch-700);
+}
+
+[data-theme="dark"] .slip-add-btn {
+  background: #1a2332;
+  border-color: #047857;
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .slip-add-btn.is-in {
+  background: #047857;
+  color: #ffffff;
+}
+
+/* Floating bet slip bar (always visible while slip is non-empty) */
+.bet-slip-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: var(--pitch-900);
+  color: var(--white);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-lg);
+  padding: 0.25rem;
+}
+
+.bet-slip-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 1.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--white);
+  border-radius: var(--radius-full);
+}
+
+.bet-slip-bar-btn:hover {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.bet-slip-bar-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--gold-500);
+  color: var(--slate-900);
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.bet-slip-bar-label {
+  font-weight: 600;
+}
+
+.bet-slip-bar-divider {
+  color: var(--gold-200);
+  opacity: 0.5;
+}
+
+.bet-slip-bar-odds {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--gold-200);
+}
+
+.bet-slip-bar-cta {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gold-200);
+  margin-left: 0.5rem;
+}
+
+/* Expanded bet slip drawer */
+.bet-slip-drawer {
+  position: fixed;
+  left: 50%;
+  bottom: 4.5rem;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 2rem));
+  z-index: 51;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 1.25rem;
+  max-height: 75vh;
+  overflow-y: auto;
+  animation: slip-drawer-in .2s ease-out;
+}
+
+@keyframes slip-drawer-in {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.bet-slip-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.bet-slip-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bet-slip-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--slate-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.bet-slip-item-main {
+  min-width: 0;
+}
+
+.bet-slip-item-match {
+  font-size: 0.8rem;
+  color: var(--slate-500);
+  font-weight: 600;
+}
+
+.bet-slip-item-prediction {
+  display: block;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--slate-900);
+  margin-top: 0.125rem;
+}
+
+.bet-slip-item-prediction:hover {
+  color: var(--pitch-700);
+  text-decoration: underline;
+}
+
+.bet-slip-item-odds {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--pitch-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.bet-slip-item-remove {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--slate-500);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.bet-slip-item-remove:hover {
+  background: var(--rose-50);
+  border-color: #fecaca;
+  color: var(--rose-700);
+}
+
+.bet-slip-calc {
+  border-top: 1px solid var(--border);
+  padding-top: 0.875rem;
+}
+
+.bet-slip-calc-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 0.875rem;
+  align-items: end;
+}
+
+@media (max-width: 480px) {
+  .bet-slip-calc-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bet-slip-calc-result {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  text-align: right;
+}
+
+.bet-slip-calc-odds {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--pitch-700);
+}
+
+.bet-slip-calc-payout {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--gold-700);
+}
+
+[data-theme="dark"] .bet-slip-drawer {
+  background: #1a2332;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .bet-slip-item {
+  background: #111827;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .bet-slip-calc-payout {
+  color: var(--gold-200);
+}
+
+/* Make sure the floating slip never sits on top of the footer text */
+body {
+  padding-bottom: 5rem;
+}
+
 .card-link-title {
   font-family: var(--font-display);
   font-size: 1.125rem;

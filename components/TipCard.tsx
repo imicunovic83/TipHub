@@ -13,6 +13,7 @@ import Countdown from "@/components/Countdown";
 import Flag from "@/components/Flag";
 import BookmakerLogo from "@/components/BookmakerLogo";
 import FavoriteButton from "@/components/FavoriteButton";
+import AddToSlipButton from "@/components/AddToSlipButton";
 
 const MARKET_VARIANT = {
   "1X2": "pitch",
@@ -92,6 +93,10 @@ export default function TipCard({ tip }: { tip: Tip }) {
       <div className="card-footer">
         <span>By {tipster.name}</span>
         <Countdown kickoffISO={match.kickoffISO} />
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <AddToSlipButton tipId={tip.id} />
       </div>
     </Link>
   );
