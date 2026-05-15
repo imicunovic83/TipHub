@@ -12,6 +12,7 @@ import ConfidenceStars from "@/components/ConfidenceStars";
 import Countdown from "@/components/Countdown";
 import BookmakerOddsTable from "@/components/BookmakerOddsTable";
 import Flag from "@/components/Flag";
+import Avatar from "@/components/Avatar";
 
 export default async function TipDetailPage({
   params,
@@ -61,9 +62,11 @@ export default async function TipDetailPage({
 
         <h1 className="title-display" style={{ display: "flex", alignItems: "center", gap: "0.625rem", flexWrap: "wrap" }}>
           <Flag code={home.flag} alt={home.name} width={32} />
+          <span className="team-code">{home.code}</span>
           {home.name}
           <span className="tip-match-vs">vs</span>
           {away.name}
+          <span className="team-code">{away.code}</span>
           <Flag code={away.flag} alt={away.name} width={32} />
         </h1>
         <p className="text-muted max-prose" style={{ marginTop: "0.5rem" }}>
@@ -109,7 +112,7 @@ export default async function TipDetailPage({
             <div className="surface">
               <h2 className="surface-title">Tipster</h2>
               <div className="tipster-row">
-                <span className="avatar">{tipster.initials}</span>
+                <Avatar seed={tipster.slug} gender={tipster.gender} alt={tipster.name} />
                 <div>
                   <h3 className="tipster-card-name">{tipster.name}</h3>
                   <p className="tipster-card-role">{tipster.specialty}</p>

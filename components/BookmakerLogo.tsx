@@ -1,7 +1,8 @@
 import type { Bookmaker } from "@/lib/data";
 
-// Brand-coloured rounded square with the bookmaker's short code, used in
-// place of a real logo so the demo doesn't ship trademarked image assets.
+// Renders the operator's actual logo from /public/bookmakers/. Local
+// hosting keeps things deterministic across browsers (no CDN/ORB issues).
+// The shortCode + brandColor are used as a safe alt/fallback.
 
 export default function BookmakerLogo({
   bookmaker,
@@ -13,16 +14,25 @@ export default function BookmakerLogo({
   return (
     <span
       className="odds-bookmaker-logo"
-      aria-hidden="true"
       style={{
         width: size,
         height: size,
-        background: bookmaker.brandColor,
-        color: "#ffffff",
-        fontSize: Math.round(size * 0.4),
+        background: "var(--white)",
+        boxShadow: "inset 0 0 0 1px var(--slate-200)",
+        padding: 0,
+        overflow: "hidden",
       }}
+      aria-hidden="true"
     >
-      {bookmaker.shortCode}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={bookmaker.logoSrc}
+        alt=""
+        width={size}
+        height={size}
+        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        loading="lazy"
+      />
     </span>
   );
 }

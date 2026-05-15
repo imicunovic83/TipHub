@@ -15,9 +15,9 @@ import BookmakerLogo from "@/components/BookmakerLogo";
 const MARKET_VARIANT = {
   "1X2": "pitch",
   "Over/Under 2.5": "gold",
-  BTTS: "pitch",
+  BTTS: "blue",
   "Asian Handicap": "rose",
-  "Correct Score": "solid",
+  "Correct Score": "violet",
 } as const;
 
 export default function TipCard({ tip }: { tip: Tip }) {
@@ -43,11 +43,13 @@ export default function TipCard({ tip }: { tip: Tip }) {
       <div className="tip-match">
         <span className="tip-match-team">
           <Flag code={home.flag} alt={home.name} width={22} />
+          <span className="team-code">{home.code}</span>
           {home.name}
         </span>
         <span className="tip-match-vs">vs</span>
         <span className="tip-match-team tip-match-team--away">
           {away.name}
+          <span className="team-code">{away.code}</span>
           <Flag code={away.flag} alt={away.name} width={22} />
         </span>
       </div>

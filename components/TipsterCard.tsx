@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Tipster } from "@/lib/data";
+import Avatar from "@/components/Avatar";
 
 export default function TipsterCard({ tipster }: { tipster: Tipster }) {
   return (
@@ -7,7 +8,7 @@ export default function TipsterCard({ tipster }: { tipster: Tipster }) {
       {tipster.isHot ? <span className="tipster-hot-badge">★ Hot</span> : null}
 
       <div className="tipster-row">
-        <span className="avatar">{tipster.initials}</span>
+        <Avatar seed={tipster.slug} gender={tipster.gender} alt={tipster.name} />
         <div>
           <h3 className="tipster-card-name">{tipster.name}</h3>
           <p className="tipster-card-role">{tipster.specialty}</p>

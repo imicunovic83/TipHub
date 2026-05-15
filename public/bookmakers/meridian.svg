@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img" aria-label="Meridianbet">
+  <circle cx="150" cy="150" r="148" fill="#fde047" stroke="#1e3a8a" stroke-width="3"/>
+  <text x="150" y="135" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-weight="800" font-size="46" fill="#b91c1c" letter-spacing="-1">meridian</text>
+  <rect x="105" y="155" width="90" height="48" rx="6" fill="#1e3a8a"/>
+  <text x="150" y="190" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-weight="800" font-size="36" fill="#fde047" letter-spacing="2">BET</text>
+</svg>

@@ -28,8 +28,9 @@ export type BookmakerSlug =
 export interface Bookmaker {
   slug: BookmakerSlug;
   name: string;
-  shortCode: string;   // 2-3 letters used in the rounded logo cell
-  brandColor: string;  // hex used as background of the logo cell
+  shortCode: string;   // 2-3 letters fallback if image fails
+  brandColor: string;  // hex used for accents (e.g. odds-row highlight border)
+  logoSrc: string;     // path under /public to the operator's logo
   country: string;
 }
 
@@ -58,13 +59,14 @@ export interface Tipster {
   specialty: string;
   shortBio: string;
   longBio: string;
-  initials: string;
-  winRate: number;     // 0-100, lifetime
-  roi: number;         // % return on investment, lifetime
-  totalTips: number;   // lifetime tip count
-  bestStreak: number;  // consecutive wins
+  initials: string;             // fallback when avatar fails to load
+  gender: "male" | "female";    // used to seed gender-typical avatar
+  winRate: number;              // 0-100, lifetime
+  roi: number;                  // % return on investment, lifetime
+  totalTips: number;            // lifetime tip count
+  bestStreak: number;           // consecutive wins
   joinedYear: number;
-  isHot: boolean;      // top-3 by win rate
+  isHot: boolean;               // top-3 by win rate
 }
 
 export interface OddsOffer {
@@ -92,11 +94,11 @@ export interface Tip {
 // Bookmakers (5 real Serbian operators)
 // ---------------------------------------------------------------------------
 export const bookmakers: Bookmaker[] = [
-  { slug: "mozzart",   name: "Mozzart Bet", shortCode: "MZ", brandColor: "#c8102e", country: "Serbia" },
-  { slug: "maxbet",    name: "Maxbet",      shortCode: "MX", brandColor: "#f59e0b", country: "Serbia" },
-  { slug: "soccerbet", name: "Soccerbet",   shortCode: "SB", brandColor: "#1e8449", country: "Serbia" },
-  { slug: "meridian",  name: "Meridianbet", shortCode: "ME", brandColor: "#1e40af", country: "Serbia" },
-  { slug: "admiral",   name: "Admiral Bet", shortCode: "AD", brandColor: "#334155", country: "Serbia" },
+  { slug: "mozzart",   name: "Mozzart Bet", shortCode: "MZ", brandColor: "#fbbf24", logoSrc: "/bookmakers/mozzart.png",   country: "Serbia" },
+  { slug: "maxbet",    name: "Maxbet",      shortCode: "MX", brandColor: "#dc2626", logoSrc: "/bookmakers/maxbet.png",    country: "Serbia" },
+  { slug: "soccerbet", name: "Soccerbet",   shortCode: "SB", brandColor: "#065f46", logoSrc: "/bookmakers/soccerbet.png", country: "Serbia" },
+  { slug: "meridian",  name: "Meridianbet", shortCode: "ME", brandColor: "#fde047", logoSrc: "/bookmakers/meridian.svg",  country: "Serbia" },
+  { slug: "admiral",   name: "Admiral Bet", shortCode: "AD", brandColor: "#1e3a8a", logoSrc: "/bookmakers/admiral.png",   country: "Serbia" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -302,6 +304,7 @@ export const tipsters: Tipster[] = [
     longBio:
       "Marko has been calling 1X2 markets professionally for over eight years. He combines xG models with squad-availability tracking, and is best known for his work on European qualifiers. His sharpest reads tend to come on tight derbies where bookmakers under-price the value of home advantage.",
     initials: "MJ",
+    gender: "male",
     winRate: 62,
     roi: 14.2,
     totalTips: 1240,
@@ -318,6 +321,7 @@ export const tipsters: Tipster[] = [
     longBio:
       "Ana built her reputation modelling shot quality and pace-of-play across the top European leagues. Her totals approach uses opponent-adjusted xG plus referee tendencies. She prefers fewer high-conviction tips per round over volume.",
     initials: "AP",
+    gender: "female",
     winRate: 58,
     roi: 9.8,
     totalTips: 870,
@@ -334,6 +338,7 @@ export const tipsters: Tipster[] = [
     longBio:
       "Stefan picks BTTS exclusively. He runs a simple but disciplined model on team scoring frequency and clean-sheet rate over the last 10 matches, weighting away xG more heavily. His lifetime hit rate of 65% is the highest among TipHub specialists.",
     initials: "SH",
+    gender: "male",
     winRate: 65,
     roi: 18.6,
     totalTips: 540,
@@ -350,6 +355,7 @@ export const tipsters: Tipster[] = [
     longBio:
       "Mark spent six years on a sportsbook trading desk before going independent. He focuses on Asian Handicap markets where soft lines move late, and is one of the few TipHub tipsters who regularly closes positions early when the line shifts in his favour.",
     initials: "MH",
+    gender: "male",
     winRate: 55,
     roi: 7.4,
     totalTips: 980,
@@ -366,6 +372,7 @@ export const tipsters: Tipster[] = [
     longBio:
       "Jelena is TipHub's lottery-ticket tipster. Her hit rate is intentionally low (around 28%) because Correct Score markets pay out at long odds. Followers staking small flat amounts have averaged a positive ROI thanks to one or two outsized wins per month.",
     initials: "JS",
+    gender: "female",
     winRate: 28,
     roi: 22.5,
     totalTips: 410,
@@ -382,6 +389,7 @@ export const tipsters: Tipster[] = [
     longBio:
       "Nikola is TipHub's generalist — he posts tips across every market and prefers a portfolio approach to single-market specialists. His edges are individually thin but his volume and discipline have produced a steady 60% hit rate over five years.",
     initials: "NĐ",
+    gender: "male",
     winRate: 60,
     roi: 11.0,
     totalTips: 2160,

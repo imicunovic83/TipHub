@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTipsByTipster, getTipsterBySlug } from "@/lib/data";
 import TipCard from "@/components/TipCard";
+import Avatar from "@/components/Avatar";
 
 export default async function TipsterProfilePage({
   params,
@@ -22,7 +23,7 @@ export default async function TipsterProfilePage({
         </nav>
 
         <div className="profile-hero">
-          <div className="avatar avatar-lg">{tipster.initials}</div>
+          <Avatar seed={tipster.slug} gender={tipster.gender} alt={tipster.name} size={80} />
           <div className="profile-body">
             <span className="eyebrow">{tipster.specialty}</span>
             <h1 className="title-display">{tipster.name}</h1>
