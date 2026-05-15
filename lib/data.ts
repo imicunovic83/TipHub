@@ -1078,3 +1078,48 @@ export function daysUntilKickoff(kickoffISO: string, fromISO?: string): number {
   const ms = kickoff.getTime() - now.getTime();
   return Math.ceil(ms / (1000 * 60 * 60 * 24));
 }
+
+// Aggregated stats per bookmaker — drives the /bookmakers leaderboard.
+export interface BookmakerStats {
+  bookmaker: Bookmaker;
+  bestCount: number;     // tips where this bookmaker offers the highest odds
+  bestPct: number;       // bestCount / total tips, rounded to 1dp
+  avgOdds: number;       // average odds offered across every tip
+  avgBestOdds: number;   // average odds when this bookmaker is the best
+  topTips: Tip[];        // up to 5 tips where this bookmaker is best,
+                         // sorted by odds descending
+}
+
+export function getBookmakerStats(): BookmakerStats[] {
+  const total = tips.length;
+  return bookmakers.map((bm) => {
+    let bestCount = 0;
+    let bestSum = 0;
+    let allSum = 0;
+    const wins: Tip[] = [];
+
+    for (const tip of tips) {
+      const offer = tip.odds.find((o) => o.bookmaker === bm.slug);
+      if (offer) allSum += offer.value;
+      const best = bestOddsForTip(tip);
+      if (best.bookmaker.slug === bm.slug) {
+        bestCount += 1;
+        bestSum += best.value;
+        wins.push(tip);
+      }
+    }
+
+    const topTips = wins
+      .sort((a, b) => bestOddsForTip(b).value - bestOddsForTip(a).value)
+      .slice(0, 5);
+
+    return {
+      bookmaker: bm,
+      bestCount,
+      bestPct: Math.round((bestCount / total) * 1000) / 10,
+      avgOdds: total > 0 ? Math.round((allSum / total) * 100) / 100 : 0,
+      avgBestOdds: bestCount > 0 ? Math.round((bestSum / bestCount) * 100) / 100 : 0,
+      topTips,
+    };
+  });
+}

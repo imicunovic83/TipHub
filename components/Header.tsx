@@ -27,6 +27,7 @@ export default function Header() {
           <Link href="/" className="site-nav-link">Home</Link>
           <Link href="/tips" className="site-nav-link">Tips</Link>
           <Link href="/tipsters" className="site-nav-link">Tipsters</Link>
+          <Link href="/bookmakers" className="site-nav-link">Bookmakers</Link>
           <Link href="/about" className="site-nav-link">About</Link>
           <FavoritesCounter />
           <ThemeToggle />
