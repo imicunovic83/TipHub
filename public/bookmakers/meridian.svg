@@ -1,6 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img" aria-label="Meridianbet">
-  <circle cx="150" cy="150" r="148" fill="#fde047" stroke="#1e3a8a" stroke-width="3"/>
-  <text x="150" y="135" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-weight="800" font-size="46" fill="#b91c1c" letter-spacing="-1">meridian</text>
-  <rect x="105" y="155" width="90" height="48" rx="6" fill="#1e3a8a"/>
-  <text x="150" y="190" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-weight="800" font-size="36" fill="#fde047" letter-spacing="2">BET</text>
+  <!-- White rounded background -->
+  <rect width="300" height="300" rx="40" fill="#ffffff"/>
+
+  <!-- Subtle border -->
+  <rect x="3" y="3" width="294" height="294" rx="37" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+
+  <!-- "meridianbet" wordmark in red italic script -->
+  <text x="150" y="170"
+        text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-weight="700"
+        font-size="60"
+        font-style="italic"
+        fill="#dc2626"
+        letter-spacing="-2">meridianbet</text>
+
+  <!-- Subtle red underline accent -->
+  <path d="M 60 200 Q 150 215, 240 200" stroke="#dc2626" stroke-width="3" fill="none" stroke-linecap="round"/>
 </svg>
