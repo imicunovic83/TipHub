@@ -14,14 +14,6 @@ import {
 import TipCard from "@/components/TipCard";
 
 type SortKey = "kickoff" | "odds-desc" | "odds-asc" | "confidence" | "tipster-rate";
-type DateBucket = "all" | "next-7" | "next-14";
-
-const REFERENCE_DATE = new Date("2026-05-15T00:00:00Z");
-
-function dayDiff(iso: string): number {
-  const target = new Date(iso);
-  return Math.ceil((target.getTime() - REFERENCE_DATE.getTime()) / (1000 * 60 * 60 * 24));
-}
 
 export default function TipsCatalogClient({
   tips,
@@ -41,7 +33,6 @@ export default function TipsCatalogClient({
   const [tipster, setTipster] = useState<string>("all");
   const [market, setMarket] = useState<TipMarket | "all">("all");
   const [oddsBucket, setOddsBucket] = useState<string>("all");
-  const [dateBucket, setDateBucket] = useState<DateBucket>("all");
   const [bookmaker, setBookmaker] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("kickoff");
 
@@ -89,19 +80,13 @@ export default function TipsCatalogClient({
         if (oddsBucket === "gt-3.0" && !(best.value >= 3.0)) return false;
       }
 
-      if (dateBucket !== "all") {
-        const days = dayDiff(match.kickoffISO);
-        if (dateBucket === "next-7" && (days < 0 || days > 7)) return false;
-        if (dateBucket === "next-14" && (days < 0 || days > 14)) return false;
-      }
-
       // "Best odds at" filter — only show tips where this bookmaker offers the
-      // best price. This is the new 6th filter.
+      // best price.
       if (bookmaker !== "all" && best.bookmaker.slug !== bookmaker) return false;
 
       return true;
     });
-  }, [tips, query, group, tipster, market, oddsBucket, dateBucket, bookmaker, bookmakers]);
+  }, [tips, query, group, tipster, market, oddsBucket, bookmaker, bookmakers]);
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -130,7 +115,7 @@ export default function TipsCatalogClient({
 
   const isFiltering =
     query !== "" || group !== "all" || tipster !== "all" || market !== "all" ||
-    oddsBucket !== "all" || dateBucket !== "all" || bookmaker !== "all";
+    oddsBucket !== "all" || bookmaker !== "all";
 
   const reset = () => {
     setQuery("");
@@ -138,7 +123,6 @@ export default function TipsCatalogClient({
     setTipster("all");
     setMarket("all");
     setOddsBucket("all");
-    setDateBucket("all");
     setBookmaker("all");
   };
 
@@ -216,20 +200,6 @@ export default function TipsCatalogClient({
               <option value="1.5-2.0">1.50 – 2.00</option>
               <option value="2.0-3.0">2.00 – 3.00</option>
               <option value="gt-3.0">3.00 and above</option>
-            </select>
-          </div>
-
-          <div className="field">
-            <label htmlFor="filter-date" className="field-label">Date</label>
-            <select
-              id="filter-date"
-              className="select"
-              value={dateBucket}
-              onChange={(e) => setDateBucket(e.target.value as DateBucket)}
-            >
-              <option value="all">Whole tournament</option>
-              <option value="next-7">Next 7 days</option>
-              <option value="next-14">Next 14 days</option>
             </select>
           </div>
 
