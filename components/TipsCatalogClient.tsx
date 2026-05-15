@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   bestOddsForTip,
   getMatchById,
@@ -12,6 +13,7 @@ import {
   type TipMarket,
 } from "@/lib/data";
 import TipCard from "@/components/TipCard";
+import { useFavorites } from "@/lib/useFavorites";
 
 type SortKey = "kickoff" | "odds-desc" | "odds-asc" | "confidence" | "tipster-rate";
 
@@ -35,6 +37,18 @@ export default function TipsCatalogClient({
   const [oddsBucket, setOddsBucket] = useState<string>("all");
   const [bookmaker, setBookmaker] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("kickoff");
+  const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
+
+  const { favorites, hydrated: favHydrated } = useFavorites();
+  const searchParams = useSearchParams();
+
+  // ?favorites=1 in the URL (e.g. from the header heart link) auto-enables
+  // the favourites-only filter on first paint.
+  useEffect(() => {
+    if (searchParams.get("favorites") === "1") {
+      setFavoritesOnly(true);
+    }
+  }, [searchParams]);
 
   const tipsterRateBySlug = useMemo(() => {
     const map = new Map<string, number>();
@@ -84,9 +98,11 @@ export default function TipsCatalogClient({
       // best price.
       if (bookmaker !== "all" && best.bookmaker.slug !== bookmaker) return false;
 
+      if (favoritesOnly && favHydrated && !favorites.has(t.id)) return false;
+
       return true;
     });
-  }, [tips, query, group, tipster, market, oddsBucket, bookmaker, bookmakers]);
+  }, [tips, query, group, tipster, market, oddsBucket, bookmaker, bookmakers, favoritesOnly, favorites, favHydrated]);
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -115,7 +131,7 @@ export default function TipsCatalogClient({
 
   const isFiltering =
     query !== "" || group !== "all" || tipster !== "all" || market !== "all" ||
-    oddsBucket !== "all" || bookmaker !== "all";
+    oddsBucket !== "all" || bookmaker !== "all" || favoritesOnly;
 
   const reset = () => {
     setQuery("");
@@ -124,6 +140,7 @@ export default function TipsCatalogClient({
     setMarket("all");
     setOddsBucket("all");
     setBookmaker("all");
+    setFavoritesOnly(false);
   };
 
   return (
@@ -233,6 +250,20 @@ export default function TipsCatalogClient({
               <option value="tipster-rate">Tipster win rate</option>
             </select>
           </div>
+
+          <div className="field">
+            <label htmlFor="filter-favorites" className="field-label">Favorites</label>
+            <button
+              id="filter-favorites"
+              type="button"
+              className={favoritesOnly ? "btn btn-gold" : "btn btn-primary"}
+              onClick={() => setFavoritesOnly((v) => !v)}
+              style={{ width: "100%" }}
+              aria-pressed={favoritesOnly}
+            >
+              {favoritesOnly ? "♥ Showing saved" : "♡ Saved only"}
+            </button>
+          </div>
         </div>
 
         {isFiltering ? (
@@ -277,6 +308,12 @@ export default function TipsCatalogClient({
               <span className="filter-chip">
                 <strong>Best @:</strong> {bookmakers.find((b) => b.slug === bookmaker)?.name ?? bookmaker}
                 <button type="button" className="filter-chip-remove" onClick={() => setBookmaker("all")} aria-label="Clear bookmaker filter">✕</button>
+              </span>
+            ) : null}
+            {favoritesOnly ? (
+              <span className="filter-chip">
+                <strong>Saved:</strong> only
+                <button type="button" className="filter-chip-remove" onClick={() => setFavoritesOnly(false)} aria-label="Clear favorites filter">✕</button>
               </span>
             ) : null}
           </div>

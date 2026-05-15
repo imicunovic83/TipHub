@@ -1,4 +1,6 @@
 import Link from "next/link";
+import ThemeToggle from "@/components/ThemeToggle";
+import FavoritesCounter from "@/components/FavoritesCounter";
 
 export default function Header() {
   return (
@@ -26,6 +28,8 @@ export default function Header() {
           <Link href="/tips" className="site-nav-link">Tips</Link>
           <Link href="/tipsters" className="site-nav-link">Tipsters</Link>
           <Link href="/about" className="site-nav-link">About</Link>
+          <FavoritesCounter />
+          <ThemeToggle />
         </nav>
       </div>
     </header>

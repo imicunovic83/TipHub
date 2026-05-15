@@ -12,6 +12,7 @@ import ConfidenceStars from "@/components/ConfidenceStars";
 import Countdown from "@/components/Countdown";
 import Flag from "@/components/Flag";
 import BookmakerLogo from "@/components/BookmakerLogo";
+import FavoriteButton from "@/components/FavoriteButton";
 
 const MARKET_VARIANT = {
   "1X2": "pitch",
@@ -43,7 +44,9 @@ export default function TipCard({ tip }: { tip: Tip }) {
 
   return (
     <Link href={`/tips/${tip.slug}`} className={confidenceClass}>
-      <div className="badge-row">
+      <FavoriteButton tipId={tip.id} />
+
+      <div className="badge-row" style={{ paddingRight: "2rem" }}>
         <span className="group-chip" aria-label={`Group ${match.group}`}>{match.group}</span>
         <Badge variant={variant}>{tip.market}</Badge>
         {tip.isPremium ? <Badge variant="gold">Premium</Badge> : null}

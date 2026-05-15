@@ -750,6 +750,280 @@ svg {
   border-color: var(--pitch-300);
 }
 
+/* Favorite (heart) button — sits in the top-right corner of every TipCard */
+.favorite-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  color: var(--slate-400);
+  cursor: pointer;
+  z-index: 2;
+  transition: color .15s ease, background-color .15s ease, transform .1s ease;
+  line-height: 1;
+}
+
+.favorite-btn:hover {
+  background: var(--white);
+  color: var(--rose-500);
+  transform: scale(1.05);
+}
+
+.favorite-btn.is-active {
+  color: var(--rose-600);
+  background: var(--rose-50);
+  border-color: #fecaca;
+}
+
+/* Favorites counter in the header */
+.favorites-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--rose-50);
+  color: var(--rose-700);
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.favorites-counter--empty {
+  background: transparent;
+  color: var(--slate-400);
+  border-color: var(--border);
+}
+
+.favorites-counter:hover {
+  background: var(--rose-100);
+}
+
+.favorites-counter-num {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Theme toggle in header */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  color: var(--slate-600);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--slate-100);
+  color: var(--pitch-700);
+  border-color: var(--pitch-300);
+}
+
+/* ============================================================
+   Dark mode — overrides the slate scale + the white card surface
+   so existing components flip without per-component changes.
+   ============================================================ */
+[data-theme="dark"] {
+  --slate-50: #0a0e1a;
+  --slate-100: #111827;
+  --slate-200: #1f2937;
+  --slate-300: #374151;
+  --slate-400: #6b7280;
+  --slate-500: #9ca3af;
+  --slate-600: #cbd5e1;
+  --slate-700: #e2e8f0;
+  --slate-800: #f1f5f9;
+  --slate-900: #ffffff;
+
+  --white: #1a2332;
+  --border: #1f2937;
+  --border-strong: #334155;
+
+  --pitch-50: #052e1d;
+  --pitch-100: #064e3b;
+  --pitch-200: #047857;
+
+  --gold-50: #2a2104;
+  --gold-100: #3b2c0a;
+  --gold-200: #b45309;
+
+  --rose-50: #2d0a13;
+  --rose-100: #3b0d1a;
+}
+
+[data-theme="dark"] body {
+  background: #020617;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .site-header {
+  background: rgb(10 14 26 / 0.85);
+  border-bottom-color: #1f2937;
+}
+
+[data-theme="dark"] .site-logo {
+  color: var(--pitch-300);
+}
+
+[data-theme="dark"] .panel,
+[data-theme="dark"] .surface,
+[data-theme="dark"] .card-link,
+[data-theme="dark"] .featured-tipster-card {
+  background: #1a2332;
+  border-color: #1f2937;
+}
+
+[data-theme="dark"] .input,
+[data-theme="dark"] .select {
+  background: #111827;
+  color: #f1f5f9;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .card-meta {
+  background: #111827;
+}
+
+[data-theme="dark"] .tip-prediction {
+  background: linear-gradient(135deg, #064e3b, #1a2332);
+  border-color: #047857;
+}
+
+[data-theme="dark"] .tipster-stats {
+  background: #111827;
+}
+
+[data-theme="dark"] .site-footer {
+  background: #0a0e1a;
+  border-top-color: #1f2937;
+}
+
+[data-theme="dark"] .empty-state {
+  background: #1a2332;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .filter-chip {
+  background: #064e3b;
+  border-color: #047857;
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .filter-chip strong,
+[data-theme="dark"] .filter-chip-remove {
+  color: #a7f3d0;
+}
+
+[data-theme="dark"] .consensus-chip {
+  background: #111827;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .favorite-btn {
+  background: rgb(26 35 50 / 0.85);
+  border-color: #334155;
+  color: #6b7280;
+}
+
+[data-theme="dark"] .favorite-btn:hover {
+  background: #1a2332;
+  color: #fda4af;
+}
+
+[data-theme="dark"] .favorite-btn.is-active {
+  background: #3b0d1a;
+  border-color: #7f1d1d;
+  color: #fda4af;
+}
+
+[data-theme="dark"] .favorites-counter {
+  background: #3b0d1a;
+  border-color: #7f1d1d;
+  color: #fecaca;
+}
+
+[data-theme="dark"] .favorites-counter--empty {
+  background: transparent;
+  color: #6b7280;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: transparent;
+  color: #d1d5db;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+  background: #1f2937;
+  color: #fde68a;
+  border-color: #fde047;
+}
+
+[data-theme="dark"] .odds-bookmaker-logo {
+  background: #f1f5f9 !important;
+  box-shadow: inset 0 0 0 1px #334155 !important;
+}
+
+[data-theme="dark"] .odds-row--best {
+  background: rgb(180 83 9 / 0.2);
+}
+
+[data-theme="dark"] .group-chip {
+  background: #047857;
+}
+
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .text-muted-sm {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .tip-best-bookmaker {
+  background: #2a2104;
+  border-color: #b45309;
+  color: #fde68a;
+}
+
+[data-theme="dark"] .tip-best-bookmaker strong {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .tip-countdown {
+  background: #111827;
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .tip-countdown--soon {
+  background: #2a2104;
+  color: #fde68a;
+}
+
+[data-theme="dark"] .disclaimer {
+  background: #111827;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .badge {
+  background: var(--badge-bg, #1f2937);
+  color: var(--badge-fg, #cbd5e1);
+}
+
 .card-link-title {
   font-family: var(--font-display);
   font-size: 1.125rem;
