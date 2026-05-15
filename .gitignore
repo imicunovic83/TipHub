@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude code harness internal state (worktrees, transcripts, etc.)
+.claude/.claude/
+.claude/settings.local.json
