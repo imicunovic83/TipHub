@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import SectionTitle from "@/components/SectionTitle";
 import TipsterApplicationForm from "@/components/TipsterApplicationForm";
 import { ACCESS_TOKEN_COOKIE, getSupabaseUserFromToken } from "@/lib/supabase-server";
-import { getLatestApplicationForUser, readApplicationStorage } from "@/lib/applications";
+import { getLatestApplicationForUser } from "@/lib/applications";
 
 const STATUS_COPY: Record<
   "pending" | "approved" | "rejected",
@@ -44,8 +44,7 @@ export default async function TipsterApplicationPage() {
 
   const alreadyTipster = user.user_metadata?.role === "tipster" || user.user_metadata?.role === "admin";
 
-  const storage = await readApplicationStorage();
-  const existing = getLatestApplicationForUser(storage, user.id);
+  const existing = await getLatestApplicationForUser(user.id);
 
   return (
     <section className="pad-section">

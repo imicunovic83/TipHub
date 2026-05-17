@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  createTipsterApplication,
-  readApplicationStorage,
-  userHasOpenApplication,
-  writeApplicationStorage,
-} from "@/lib/applications";
+import { createTipsterApplication, userHasOpenApplication } from "@/lib/applications";
 import { getAccessTokenFromRequest, getSupabaseUserFromToken } from "@/lib/supabase-server";
 
 export async function POST(request: Request) {
@@ -30,17 +25,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Specialty and bio are required." }, { status: 400 });
   }
 
-  const storage = await readApplicationStorage();
-
-  if (userHasOpenApplication(storage, user.id)) {
+  if (await userHasOpenApplication(user.id)) {
     return NextResponse.json(
       { error: "You already have a pending or approved application." },
       { status: 409 },
     );
   }
 
-  const application = createTipsterApplication(storage, user.id, specialty, bio);
-  await writeApplicationStorage(storage);
-
+  const application = await createTipsterApplication(user.id, specialty, bio);
   return NextResponse.json({ success: true, application });
 }

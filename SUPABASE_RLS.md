@@ -1,57 +1,148 @@
-# Supabase RLS Setup for TipHub
+# Supabase schema for TipHub
 
-This project now expects a Supabase `profiles` table with Row Level Security enabled.
+This is the full database setup TipHub expects. Run the SQL in the
+Supabase SQL editor on a fresh project (or via `supabase migration`).
 
-## Recommended table schema
-
-Run this SQL in Supabase SQL editor:
+## 1. `profiles` — per-user app data, RLS by `auth.uid()`
 
 ```sql
-create table profiles (
-  id uuid primary key references auth.users(id),
+create table public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
   favorite_tipster text,
   email text,
-  created_at timestamp with time zone default now()
+  created_at timestamptz not null default now()
 );
+
+alter table public.profiles enable row level security;
+
+create policy "Select own profile"
+  on public.profiles for select to authenticated
+  using (auth.uid() = id);
+
+create policy "Insert own profile"
+  on public.profiles for insert to authenticated
+  with check (auth.uid() = id);
+
+create policy "Update own profile"
+  on public.profiles for update to authenticated
+  using (auth.uid() = id) with check (auth.uid() = id);
 ```
 
-## Enable RLS
+## 2. Auto-create profile row on signup
 
-In Supabase Table Editor for `profiles`, turn on `Row Level Security`.
+Email confirmation is on by default in Supabase, which means `signUp`
+returns no session — a client-side `profiles.insert(...)` would be
+blocked by RLS. Use a trigger:
 
-## Add policies
-
-Use the following policies:
-
-### SELECT own profile
 ```sql
-create policy "Select own profile" on profiles
-for select
-using (auth.uid() = id);
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  insert into public.profiles (id, full_name, favorite_tipster, email)
+  values (
+    new.id,
+    new.raw_user_meta_data->>'full_name',
+    new.raw_user_meta_data->>'favorite_tipster',
+    new.email
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
 ```
 
-### INSERT own profile
+## 3. App tables — server-only access via service role
+
+All three tables enable RLS with **no policies**, so anon and
+authenticated direct REST access is denied. The app accesses them
+only through Next API routes using `SUPABASE_SERVICE_ROLE_KEY`.
+
 ```sql
-create policy "Insert own profile" on profiles
-for insert
-with check (auth.uid() = id);
+create extension if not exists pgcrypto;
+
+-- Tipster applications submitted via /api/auth/apply
+create table public.tipster_applications (
+  id text primary key default ('a-' || encode(gen_random_bytes(8), 'hex')),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  specialty text not null,
+  bio text not null,
+  status text not null default 'pending' check (status in ('pending','approved','rejected')),
+  submitted_at timestamptz not null default now(),
+  reviewed_at timestamptz,
+  reviewer_id uuid references auth.users(id) on delete set null,
+  note text
+);
+alter table public.tipster_applications enable row level security;
+create index on public.tipster_applications (status);
+create index on public.tipster_applications (user_id);
+
+-- Community competition: free-form name/email entries, not tied to auth
+create table public.competition_users (
+  id text primary key default ('u-' || encode(gen_random_bytes(6), 'hex')),
+  name text not null,
+  email text not null unique,
+  joined_at timestamptz not null default now()
+);
+alter table public.competition_users enable row level security;
+
+create table public.competition_submissions (
+  id text primary key default ('s-' || encode(gen_random_bytes(6), 'hex')),
+  user_id text not null references public.competition_users(id) on delete cascade,
+  match_id text not null,
+  market text not null,
+  prediction text not null,
+  odds numeric not null check (odds > 1),
+  stake numeric not null check (stake > 0),
+  status text not null default 'pending' check (status in ('pending','won','lost')),
+  result_amount numeric not null default 0,
+  created_at timestamptz not null default now()
+);
+alter table public.competition_submissions enable row level security;
+create index on public.competition_submissions (user_id);
+create index on public.competition_submissions (status);
+
+-- Analytics events, written by /api/analytics
+create table public.analytics_events (
+  id bigserial primary key,
+  name text not null,
+  variant text,
+  payload jsonb,
+  ts timestamptz not null default now()
+);
+alter table public.analytics_events enable row level security;
+create index on public.analytics_events (ts desc);
+create index on public.analytics_events (name);
 ```
 
-### UPDATE own profile
-```sql
-create policy "Update own profile" on profiles
-for update
-using (auth.uid() = id)
-with check (auth.uid() = id);
+## 4. Granting admin role
+
+After registering normally, find your user under Supabase
+Authentication → Users and set its `user_metadata` to:
+
+```json
+{ "role": "admin" }
 ```
 
-## How this project uses it
+The admin dashboard (`/admin`) checks `user_metadata.role === "admin"`
+on every request. When that user later approves a tipster
+application, the admin route uses the service role to set the
+applicant's `user_metadata.role = "tipster"`.
 
-- `components/RegisterForm.tsx` now creates a `profiles` row when a new Supabase user registers.
-- `app/profile/page.tsx` fetches the current user's row from `profiles`.
-- If RLS is configured correctly, the anon Supabase key can only read/insert the signed-in user's own profile row.
+## 5. Optional — Google OAuth
 
-## Optional server-side admin key
-
-If you want to use server-side service actions, set `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
+To enable the "Continue with Google" buttons in Login/Register,
+enable the **Google** provider under Authentication → Providers and
+re-add the OAuth buttons in `components/LoginForm.tsx` and
+`components/RegisterForm.tsx`. The `/auth/callback` page is already
+scaffolded.

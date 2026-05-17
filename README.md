@@ -38,9 +38,9 @@ Built with **Next.js 16** (App Router, Turbopack), **React 19**, and
 - TypeScript 5
 - Tailwind CSS v4
 - `@supabase/supabase-js` v2
-- File-based JSON storage under `data/` for competition submissions,
-  tipster applications, and analytics events (suitable for prototyping
-  and self-hosted deployments — not for serverless production).
+- Supabase-backed storage for tipster applications, community
+  competition (users, submissions, leaderboard), and analytics events
+  — works on serverless platforms like Vercel.
 
 ---
 
@@ -132,10 +132,9 @@ lib/
   data.ts                 Seed data for tips/tipsters/bookmakers/matches
   supabase.ts             Browser Supabase client
   supabase-server.ts      Server clients (user-scoped + service-role) and cookie helpers
-  applications.ts         Tipster-application storage (data/applications.json)
-  competition.ts          Competition storage + leaderboard math
+  applications.ts         Tipster-application storage (Supabase)
+  competition.ts          Competition storage + leaderboard math (Supabase)
   analytics.ts            Client-side trackEvent helper
-data/                      Runtime JSON storage (gitignore in real deploys)
 ```
 
 ---
