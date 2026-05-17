@@ -125,7 +125,26 @@ create index on public.analytics_events (ts desc);
 create index on public.analytics_events (name);
 ```
 
-## 4. Granting admin role
+## 4. Auth URL configuration
+
+Supabase only honors `redirectTo` values that match the project's
+**Redirect URLs** allowlist (Authentication → URL Configuration in the
+dashboard). The default Site URL alone is not enough.
+
+Add at minimum:
+
+```
+http://localhost:3000/reset-password
+http://localhost:3000/auth/callback
+https://<your-production-domain>/reset-password
+https://<your-production-domain>/auth/callback
+```
+
+Without `/reset-password` in this list, the password-reset email link
+falls back to the Site URL — the user lands on `/` with the recovery
+token in the URL hash but no form to use it.
+
+## 5. Granting admin role
 
 After registering normally, find your user under Supabase
 Authentication → Users and set its `user_metadata` to:
@@ -139,7 +158,7 @@ on every request. When that user later approves a tipster
 application, the admin route uses the service role to set the
 applicant's `user_metadata.role = "tipster"`.
 
-## 5. Optional — Google OAuth
+## 6. Optional — Google OAuth
 
 To enable the "Continue with Google" buttons in Login/Register,
 enable the **Google** provider under Authentication → Providers and
