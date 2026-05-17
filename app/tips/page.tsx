@@ -1,19 +1,14 @@
 import { Suspense } from "react";
-import {
-  bookmakers,
-  getAllGroups,
-  getAllMarkets,
-  getAllTips,
-  getAllTipsters,
-} from "@/lib/data";
+import { bookmakers, getAllGroups, getAllMarkets } from "@/lib/data";
+import { getMergedTips, getMergedTipsters } from "@/lib/merged-data";
 import SectionTitle from "@/components/SectionTitle";
 import TipsCatalogClient from "@/components/TipsCatalogClient";
 
-export default function TipsPage() {
-  const tips = getAllTips();
+export default async function TipsPage() {
+  const [tips, mergedTipsters] = await Promise.all([getMergedTips(), getMergedTipsters()]);
   const groups = getAllGroups();
   const markets = getAllMarkets();
-  const tipsters = getAllTipsters().map((t) => ({
+  const tipsters = mergedTipsters.map((t) => ({
     slug: t.slug,
     name: t.name,
     winRate: t.winRate,

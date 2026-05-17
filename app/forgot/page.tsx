@@ -18,7 +18,7 @@ export default function ForgotPage() {
 
         <div className="panel" style={{ marginTop: "1rem" }}>
           <p>
-            Remembered your password? <Link href="/login">Log in here.</Link>
+            Remembered your password? <Link href="/login" className="text-link">Log in here.</Link>
           </p>
         </div>
       </div>

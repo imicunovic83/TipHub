@@ -352,7 +352,11 @@ export default function TipsCatalogClient({
       ) : (
         <div className="grid-cards">
           {sorted.map((tip) => (
-            <TipCard key={tip.id} tip={tip} />
+            <TipCard
+              key={tip.id}
+              tip={tip}
+              tipsterName={tipsters.find((t) => t.slug === tip.tipsterSlug)?.name}
+            />
           ))}
         </div>
       )}

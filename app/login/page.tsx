@@ -25,9 +25,9 @@ export default async function LoginPage({
 
         <div className="panel" style={{ marginTop: "1rem" }}>
           <p>
-            Don&apos;t have an account yet? <Link href="/register">Create one here.</Link>
+            Don&apos;t have an account yet? <Link href="/register" className="text-link">Create one here.</Link>
             <br />
-            <Link href="/forgot">Forgot your password?</Link>
+            <Link href="/forgot" className="text-link">Forgot your password?</Link>
           </p>
         </div>
       </div>

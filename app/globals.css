@@ -450,6 +450,36 @@ svg {
   background: var(--pitch-800);
 }
 
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  background: var(--slate-200);
+  color: var(--slate-500);
+  border-color: var(--slate-200);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn:disabled:hover,
+.btn[aria-disabled="true"]:hover {
+  background: var(--slate-200);
+  color: var(--slate-500);
+}
+
+/* Inline text link — used inside paragraphs to make routes (Log in, Reset
+   password, etc.) actually look like links, since the global `a { color:
+   inherit }` resets browser defaults. */
+.text-link {
+  color: var(--pitch-700);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.text-link:hover {
+  color: var(--pitch-900);
+}
+
 .btn-gold {
   background: var(--gold-500);
   color: var(--slate-900);

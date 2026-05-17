@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTipsByTipster, getTipsterBySlug } from "@/lib/data";
+import { getMergedTipsByTipster, getMergedTipsterBySlug } from "@/lib/merged-data";
 import TipCard from "@/components/TipCard";
 import Avatar from "@/components/Avatar";
 
@@ -10,10 +10,10 @@ export default async function TipsterProfilePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const tipster = getTipsterBySlug(slug);
+  const tipster = await getMergedTipsterBySlug(slug);
   if (!tipster) notFound();
 
-  const tipsterTips = getTipsByTipster(tipster.slug);
+  const tipsterTips = await getMergedTipsByTipster(tipster.slug);
 
   return (
     <section className="pad-section">
@@ -63,7 +63,7 @@ export default async function TipsterProfilePage({
         ) : (
           <div className="grid-cards">
             {tipsterTips.map((tip) => (
-              <TipCard key={tip.id} tip={tip} />
+              <TipCard key={tip.id} tip={tip} tipsterName={tipster.name} />
             ))}
           </div>
         )}

@@ -70,6 +70,77 @@ function rowToTip(row: Row): UserTip {
   };
 }
 
+export async function getAllUserTips(): Promise<UserTip[]> {
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("tips")
+    .select()
+    .order("posted_at", { ascending: false });
+  if (error) throw new Error(`Load all tips failed: ${error.message}`);
+  return (data as Row[]).map(rowToTip);
+}
+
+export async function getUserTipById(id: string): Promise<UserTip | undefined> {
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("tips")
+    .select()
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`Load tip failed: ${error.message}`);
+  return data ? rowToTip(data as Row) : undefined;
+}
+
+export async function updateOwnTip(
+  tipId: string,
+  ownerUserId: string,
+  patch: {
+    matchId?: string;
+    market?: TipMarket;
+    prediction?: string;
+    shortReason?: string;
+    analysis?: string | null;
+    oddsValue?: number;
+    oddsBookmaker?: string;
+    confidence?: 1 | 2 | 3 | 4 | 5;
+  },
+): Promise<UserTip | undefined> {
+  const supabase = getSupabaseServerClient();
+  const update: Record<string, unknown> = {};
+  if (patch.matchId !== undefined) update.match_id = patch.matchId;
+  if (patch.market !== undefined) update.market = patch.market;
+  if (patch.prediction !== undefined) update.prediction = patch.prediction.trim();
+  if (patch.shortReason !== undefined) update.short_reason = patch.shortReason.trim();
+  if (patch.analysis !== undefined) update.analysis = patch.analysis ? patch.analysis.trim() : null;
+  if (patch.oddsValue !== undefined) update.odds_value = patch.oddsValue;
+  if (patch.oddsBookmaker !== undefined) update.odds_bookmaker = patch.oddsBookmaker.trim();
+  if (patch.confidence !== undefined) update.confidence = patch.confidence;
+
+  const { data, error } = await supabase
+    .from("tips")
+    .update(update)
+    .eq("id", tipId)
+    .eq("tipster_user_id", ownerUserId)
+    .eq("status", "pending")
+    .select()
+    .maybeSingle();
+  if (error) throw new Error(`Update tip failed: ${error.message}`);
+  return data ? rowToTip(data as Row) : undefined;
+}
+
+export async function deleteOwnTip(tipId: string, ownerUserId: string): Promise<boolean> {
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("tips")
+    .delete()
+    .eq("id", tipId)
+    .eq("tipster_user_id", ownerUserId)
+    .eq("status", "pending")
+    .select("id");
+  if (error) throw new Error(`Delete tip failed: ${error.message}`);
+  return (data?.length ?? 0) > 0;
+}
+
 export async function getTipsForTipster(userId: string): Promise<UserTip[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase

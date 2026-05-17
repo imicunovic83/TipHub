@@ -102,7 +102,7 @@ export default async function TipsterApplicationPage() {
 
         <div className="panel" style={{ marginTop: "1rem" }}>
           <p>
-            Signed in as <strong>{user.email}</strong>. Not you? <Link href="/login">Switch account.</Link>
+            Signed in as <strong>{user.email}</strong>. Not you? <Link href="/login" className="text-link">Switch account.</Link>
           </p>
         </div>
       </div>

@@ -23,10 +23,11 @@ const MARKET_VARIANT = {
   "Correct Score": "violet",
 } as const;
 
-export default function TipCard({ tip }: { tip: Tip }) {
+export default function TipCard({ tip, tipsterName }: { tip: Tip; tipsterName?: string }) {
   const match = getMatchById(tip.matchId);
-  const tipster = getTipsterBySlug(tip.tipsterSlug);
-  if (!match || !tipster) return null;
+  const seedTipster = getTipsterBySlug(tip.tipsterSlug);
+  const displayName = tipsterName ?? seedTipster?.name;
+  if (!match || !displayName) return null;
 
   const home = getTeamByCode(match.homeCode);
   const away = getTeamByCode(match.awayCode);
@@ -95,7 +96,7 @@ export default function TipCard({ tip }: { tip: Tip }) {
       </div>
 
       <div className="card-footer">
-        <span>By {tipster.name}</span>
+        <span>By {displayName}</span>
         <Countdown kickoffISO={match.kickoffISO} />
       </div>
 

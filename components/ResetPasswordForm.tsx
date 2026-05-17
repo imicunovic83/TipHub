@@ -87,7 +87,7 @@ export default function ResetPasswordForm() {
       <div className="stack">
         <p>
           This page needs a valid password-reset link. Request a new one from{" "}
-          <Link href="/forgot">the forgot-password page</Link>.
+          <Link href="/forgot" className="text-link">the forgot-password page</Link>.
         </p>
       </div>
     );

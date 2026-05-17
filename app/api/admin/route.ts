@@ -6,6 +6,7 @@ import {
 } from "@/lib/applications";
 import { getPendingSubmissions, resolveCompetitionSubmission } from "@/lib/competition";
 import { getPendingTips, resolveTip } from "@/lib/tipster-tips";
+import { ensureTipsterProfile } from "@/lib/tipster-profiles";
 import {
   getAccessTokenFromRequest,
   getSupabaseServerClient,
@@ -55,10 +56,21 @@ export async function POST(request: Request) {
           user_metadata: { ...existingMetadata, role: "tipster" },
         });
       }
+
+      const displayName =
+        (typeof existingMetadata.full_name === "string" && existingMetadata.full_name.trim()) ||
+        targetUser?.user?.email ||
+        "Tipster";
+      await ensureTipsterProfile({
+        userId: application.userId,
+        name: displayName,
+        specialty: application.specialty,
+        bio: application.bio,
+      });
     } catch (error) {
       console.error("Failed to promote user to tipster:", error);
       return NextResponse.json(
-        { error: "Application marked approved but role update failed. Check SUPABASE_SERVICE_ROLE_KEY." },
+        { error: "Application marked approved but role/profile setup failed. Check SUPABASE_SERVICE_ROLE_KEY." },
         { status: 500 },
       );
     }

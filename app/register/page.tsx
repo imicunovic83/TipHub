@@ -18,7 +18,7 @@ export default function RegisterPage() {
 
         <div className="panel" style={{ marginTop: "1rem" }}>
           <p>
-            Already have an account? <Link href="/login">Log in here.</Link>
+            Already have an account? <Link href="/login" className="text-link">Log in here.</Link>
           </p>
         </div>
       </div>

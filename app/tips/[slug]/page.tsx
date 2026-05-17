@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  bestOddsForTip,
-  getMatchById,
-  getTeamByCode,
-  getTipBySlug,
-  getTipsterBySlug,
-} from "@/lib/data";
+import { bestOddsForTip, getMatchById, getTeamByCode } from "@/lib/data";
+import { getMergedTipBySlug, getMergedTipsterBySlug } from "@/lib/merged-data";
 import { Badge } from "@/components/Badge";
 import ConfidenceStars from "@/components/ConfidenceStars";
 import Countdown from "@/components/Countdown";
@@ -21,11 +16,11 @@ export default async function TipDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const tip = getTipBySlug(slug);
+  const tip = await getMergedTipBySlug(slug);
   if (!tip) notFound();
 
   const match = getMatchById(tip.matchId);
-  const tipster = getTipsterBySlug(tip.tipsterSlug);
+  const tipster = await getMergedTipsterBySlug(tip.tipsterSlug);
   if (!match || !tipster) notFound();
 
   const home = getTeamByCode(match.homeCode);
