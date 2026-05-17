@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import {
-  getMatchById,
-  getTeamByCode,
-  getTipsterBySlug,
-  type Tip,
-} from "@/lib/data";
+import { getMatchById, getTeamByCode, type Tip } from "@/lib/data";
+import { getMergedTipsters } from "@/lib/merged-data";
 import SectionTitle from "@/components/SectionTitle";
 import TipCard from "@/components/TipCard";
 
@@ -37,8 +33,12 @@ export default async function SearchPage({
   const raw = sp.q ?? "";
   const trimmed = raw.trim();
 
-  const data = await fetchSearchResults(trimmed);
+  const [data, allTipsters] = await Promise.all([
+    fetchSearchResults(trimmed),
+    getMergedTipsters(),
+  ]);
   const { count, tips } = data ?? { count: 0, tips: [] };
+  const tipsterBySlug = new Map(allTipsters.map((t) => [t.slug, t]));
 
   // Build a small "see also" list of matching teams/tipsters so the search
   // surfaces information beyond just tips. This is the multi-field aspect.
@@ -55,7 +55,7 @@ export default async function SearchPage({
 
   const tipsterHits = q
     ? tips
-        .map((t) => getTipsterBySlug(t.tipsterSlug))
+        .map((t) => tipsterBySlug.get(t.tipsterSlug))
         .filter((t): t is NonNullable<typeof t> => Boolean(t))
         .filter((t) => t.name.toLowerCase().includes(q))
     : [];
@@ -70,8 +70,8 @@ export default async function SearchPage({
             title="Search results"
             description={
               trimmed
-                ? `Found ${count} ${count === 1 ? "tip" : "tips"} for "${trimmed}". Search runs across team names, tipsters, bookmakers, prediction text, and markets.`
-                : "Type a team, tipster, market, or bookmaker name into the header search to find matching tips."
+                ? `Found ${count} ${count === 1 ? "tip" : "tips"} for "${trimmed}". Bookmaker queries only show tips where that bookmaker has the best odds; other terms match team names, tipsters, prediction text, and markets.`
+                : "Type a team, tipster, market, or bookmaker name into the header search. For bookmakers, results are limited to tips where that bookmaker offers the best odds."
             }
           />
 
@@ -105,7 +105,11 @@ export default async function SearchPage({
           ) : (
             <div className="grid-cards">
               {tips.map((tip) => (
-                <TipCard key={tip.id} tip={tip} />
+                <TipCard
+                  key={tip.id}
+                  tip={tip}
+                  tipsterName={tipsterBySlug.get(tip.tipsterSlug)?.name}
+                />
               ))}
             </div>
           )}

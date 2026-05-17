@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
-import {
-  bookmakers,
-  getAllTips,
-  getMatchById,
-  getTeamByCode,
-  getTipsterBySlug,
-} from "@/lib/data";
+import { bestOddsForTip, getMatchById, getTeamByCode } from "@/lib/data";
+import { getMergedTips, getMergedTipsters } from "@/lib/merged-data";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -13,7 +8,10 @@ export async function GET(request: Request) {
   const market = searchParams.get("market");
   const tipster = searchParams.get("tipster");
 
-  let tips = getAllTips();
+  const [allTips, allTipsters] = await Promise.all([getMergedTips(), getMergedTipsters()]);
+  const tipsterNameBySlug = new Map(allTipsters.map((t) => [t.slug, t.name]));
+
+  let tips = allTips;
 
   if (q) {
     const needle = q.toLowerCase();
@@ -21,16 +19,25 @@ export async function GET(request: Request) {
       const match = getMatchById(t.matchId);
       const home = match ? getTeamByCode(match.homeCode) : undefined;
       const away = match ? getTeamByCode(match.awayCode) : undefined;
-      const tipsterObj = getTipsterBySlug(t.tipsterSlug);
+      const tipsterName = tipsterNameBySlug.get(t.tipsterSlug);
+      // Bookmaker is treated as a "best odds" filter — searching "Maxbet"
+      // should only surface tips where Maxbet has the highest odds, not
+      // every tip (since every tip carries all five operators).
+      const best = bestOddsForTip(t);
+      const bestBookmaker = best.bookmaker.name;
+
       const haystack = [
         home?.name,
         away?.name,
-        tipsterObj?.name,
+        tipsterName,
         t.prediction,
         t.market,
         t.shortReason,
-        ...t.odds.map((o) => bookmakers.find((b) => b.slug === o.bookmaker)?.name ?? ""),
-      ].filter(Boolean).join(" ").toLowerCase();
+        bestBookmaker,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       return haystack.includes(needle);
     });
   }
