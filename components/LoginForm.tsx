@@ -55,17 +55,6 @@ export default function LoginForm({ nextPath: nextPathProp }: { nextPath?: strin
     setLoading(false);
   }
 
-  async function handleGoogle() {
-    const supabase = getSupabaseClient();
-    trackEvent('login_oauth_click', { provider: 'google' });
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-  }
-
   return (
     <form className="panel stack" onSubmit={handleSubmit}>
       <div className="field">
@@ -106,9 +95,6 @@ export default function LoginForm({ nextPath: nextPathProp }: { nextPath?: strin
 
       <button type="submit" className="btn btn-primary" disabled={loading}>
         {loading ? "Logging in…" : "Log in"}
-      </button>
-      <button type="button" onClick={handleGoogle} className="btn btn-ghost" style={{ marginTop: '0.5rem' }}>
-        Continue with Google
       </button>
     </form>
   );

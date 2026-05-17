@@ -58,21 +58,8 @@ export default function RegisterForm() {
     if (error) {
       setStatus({ type: "error", message: error.message || "Registration failed." });
     } else {
-      const userId = data.user?.id;
-      if (userId) {
-        const { error: profileError } = await supabase.from("profiles").insert([
-          {
-            id: userId,
-            full_name: fullName,
-            favorite_tipster: form.favoriteTipster || null,
-            email: form.email.trim().toLowerCase(),
-          },
-        ]);
-
-        if (profileError) {
-          console.warn("Profile row creation failed:", profileError.message);
-        }
-      }
+      // Profile row is created automatically by the `on_auth_user_created`
+      // trigger that reads full_name / favorite_tipster from user_metadata.
 
       if (data.session?.access_token) {
         await fetch("/api/auth/session", {
@@ -104,17 +91,6 @@ export default function RegisterForm() {
     }
 
     setLoading(false);
-  }
-
-  async function handleGoogle() {
-    const supabase = getSupabaseClient();
-    trackEvent('register_oauth_click', { provider: 'google' });
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
   }
 
   return (
@@ -248,9 +224,6 @@ export default function RegisterForm() {
 
       <button type="submit" className="btn btn-primary" disabled={loading}>
         {loading ? "Creating account…" : "Create account"}
-      </button>
-      <button type="button" onClick={handleGoogle} className="btn btn-ghost" style={{ marginTop: '0.5rem' }}>
-        Continue with Google
       </button>
     </form>
   );

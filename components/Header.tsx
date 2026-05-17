@@ -31,7 +31,6 @@ export default function Header() {
           <Link href="/competition" className="site-nav-link">Community</Link>
           <Link href="/tipsters" className="site-nav-link">Tipsters</Link>
           <Link href="/bookmakers" className="site-nav-link">Bookmakers</Link>
-          <Link href="/tipster/apply" className="site-nav-link">Become a tipster</Link>
           <Link href="/about" className="site-nav-link">About</Link>
           <AuthControls />
           <FavoritesCounter />

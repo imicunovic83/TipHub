@@ -13,7 +13,6 @@ const NAV_LINKS = [
   { href: "/competition", label: "Community" },
   { href: "/tipsters", label: "Tipsters" },
   { href: "/bookmakers", label: "Bookmakers" },
-  { href: "/tipster/apply", label: "Become a tipster" },
   { href: "/about", label: "About" },
 ];
 
