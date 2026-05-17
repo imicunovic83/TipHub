@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { getSupabaseClient } from "@/lib/supabase";
 import { trackEvent } from "@/lib/analytics";
 
@@ -18,6 +19,7 @@ export default function RegisterForm() {
   });
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,40 +59,60 @@ export default function RegisterForm() {
 
     if (error) {
       setStatus({ type: "error", message: error.message || "Registration failed." });
-    } else {
-      // Profile row is created automatically by the `on_auth_user_created`
-      // trigger that reads full_name / favorite_tipster from user_metadata.
-
-      if (data.session?.access_token) {
-        await fetch("/api/auth/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token,
-          }),
-        });
-      }
-
-      setStatus({
-        type: "success",
-        message: data.user
-          ? "Account created successfully. Check your email to confirm your account."
-          : "Check your email to complete registration.",
-      });
-      setForm({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        favoriteTipster: "",
-        terms: false,
-      });
-      router.push("/");
+      setLoading(false);
+      return;
     }
 
+    // Profile row is created automatically by the `on_auth_user_created`
+    // trigger that reads full_name / favorite_tipster from user_metadata.
+
+    if (data.session?.access_token) {
+      // Email confirmation is off — user is logged in straight away.
+      await fetch("/api/auth/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        }),
+      });
+      router.push("/profile");
+      return;
+    }
+
+    // Email confirmation required. Show a clear "check your email" view
+    // instead of bouncing to the home page.
+    setSubmittedEmail(form.email.trim().toLowerCase());
+    setForm({
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      favoriteTipster: "",
+      terms: false,
+    });
     setLoading(false);
+  }
+
+  if (submittedEmail) {
+    return (
+      <div className="stack">
+        <div className="badge badge--pitch" style={{ alignSelf: "flex-start" }}>Account created</div>
+        <h3 className="title-section" style={{ marginTop: 0 }}>One last step — check your email</h3>
+        <p>
+          We sent a confirmation link to <strong>{submittedEmail}</strong>. Click it to verify your
+          address and finish setting up your TipHub account.
+        </p>
+        <p className="text-muted-sm">
+          The email may take a minute to arrive. Check spam if you don&apos;t see it, or{" "}
+          <Link href="/forgot" className="text-link">request a new link</Link>.
+        </p>
+        <p>
+          Already confirmed? <Link href="/login" className="text-link">Log in</Link>.
+        </p>
+      </div>
+    );
   }
 
   return (
