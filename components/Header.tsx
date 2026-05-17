@@ -2,6 +2,7 @@ import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import FavoritesCounter from "@/components/FavoritesCounter";
 import MobileMenu from "@/components/MobileMenu";
+import AuthControls from "@/components/AuthControls";
 
 export default function Header() {
   return (
@@ -27,9 +28,12 @@ export default function Header() {
         <nav className="site-nav">
           <Link href="/" className="site-nav-link">Home</Link>
           <Link href="/tips" className="site-nav-link">Tips</Link>
+          <Link href="/competition" className="site-nav-link">Community</Link>
           <Link href="/tipsters" className="site-nav-link">Tipsters</Link>
           <Link href="/bookmakers" className="site-nav-link">Bookmakers</Link>
+          <Link href="/tipster/apply" className="site-nav-link">Become a tipster</Link>
           <Link href="/about" className="site-nav-link">About</Link>
+          <AuthControls />
           <FavoritesCounter />
           <ThemeToggle />
         </nav>

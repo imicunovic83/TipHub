@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   bookmakers,
   getAllGroups,
@@ -27,13 +28,15 @@ export default function TipsPage() {
             title="All tips"
             description="Browse tips across all 12 World Cup 2026 groups. Filter by tipster, market, odds range, date, or which bookmaker offers the best price."
           />
-          <TipsCatalogClient
-            tips={tips}
-            groups={groups}
-            markets={markets}
-            tipsters={tipsters}
-            bookmakers={bookmakers}
-          />
+          <Suspense fallback={<div>Loading tips…</div>}>
+            <TipsCatalogClient
+              tips={tips}
+              groups={groups}
+              markets={markets}
+              tipsters={tipsters}
+              bookmakers={bookmakers}
+            />
+          </Suspense>
         </div>
       </div>
     </section>

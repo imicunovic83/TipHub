@@ -236,6 +236,24 @@ svg {
   border-bottom-color: var(--pitch-500);
 }
 
+.site-nav .btn {
+  padding: 0.55rem 1rem;
+  font-size: 0.92rem;
+  border-radius: calc(var(--radius-md) * 1.2);
+  box-shadow: 0 6px 16px rgb(16 185 129 / 0.12);
+}
+
+.site-nav .btn.btn-gold {
+  background: var(--gold-500);
+  color: var(--slate-900);
+  border-color: transparent;
+}
+
+.site-nav .btn.btn-gold:hover {
+  background: var(--gold-600);
+  color: var(--white);
+}
+
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--border);
@@ -466,6 +484,80 @@ svg {
   text-decoration: underline;
 }
 
+/* Auth controls styling */
+.auth-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auth-link {
+  color: var(--slate-600);
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: calc(var(--radius-md) * 0.9);
+}
+
+.auth-link:hover {
+  color: var(--pitch-700);
+  background: rgba(16,185,129,0.05);
+}
+
+.auth-cta {
+  padding: 0.45rem 0.9rem;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .auth-controls { gap: 0.4rem; }
+  .auth-cta { padding: 0.45rem 0.65rem; }
+}
+
+/* Header-specific auth layout */
+.site-nav .auth-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.site-nav .auth-link {
+  color: var(--slate-600);
+  opacity: 0.95;
+}
+
+.site-nav .auth-cta {
+  padding: 0.55rem 1rem;
+  font-weight: 800;
+  border-radius: calc(var(--radius-md) * 1.25);
+  box-shadow: 0 10px 24px rgb(16 185 129 / 0.12);
+  transform: translateY(0);
+}
+
+.site-nav .auth-cta:hover {
+  transform: translateY(-1px);
+}
+
+.auth-cta:focus {
+  outline: 3px solid rgb(16 185 129 / 0.16);
+  outline-offset: 2px;
+}
+
+/* Mobile menu: stack auth controls and make CTA full width */
+.mobile-menu-footer .auth-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
+  padding: 0.5rem 0;
+}
+
+.mobile-menu-footer .auth-cta,
+.mobile-menu-footer .auth-link {
+  width: 100%;
+  justify-content: center;
+}
+
 /* Form controls */
 .input,
 .select {
@@ -625,6 +717,58 @@ svg {
   --badge-bg: #fff7ed;
   --badge-fg: #9a3412;
   --badge-ring: #fed7aa;
+}
+
+.competition-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.competition-leaderboard {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.competition-leaderboard th,
+.competition-leaderboard td {
+  text-align: left;
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.competition-leaderboard th {
+  color: var(--slate-600);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.competition-leaderboard tbody tr:hover {
+  background: var(--slate-50);
+}
+
+.competition-stat {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--slate-50);
+}
+
+.competition-stat-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+}
+
+.competition-stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--slate-800);
 }
 
 /* 3-letter team code chip */

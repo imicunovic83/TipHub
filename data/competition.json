@@ -1,0 +1,126 @@
+{
+  "users": [
+    {
+      "id": "u-1",
+      "name": "Luka Marković",
+      "email": "luka@example.com",
+      "joinedAt": "2026-05-02T09:15:00.000Z"
+    },
+    {
+      "id": "u-2",
+      "name": "Tereza Ilić",
+      "email": "tereza@example.com",
+      "joinedAt": "2026-05-04T13:42:00.000Z"
+    },
+    {
+      "id": "u-3",
+      "name": "Ivan Novak",
+      "email": "ivan@example.com",
+      "joinedAt": "2026-05-08T18:20:00.000Z"
+    },
+    {
+      "id": "u-4",
+      "name": "Maja Kovač",
+      "email": "maja@example.com",
+      "joinedAt": "2026-05-12T11:05:00.000Z"
+    }
+  ],
+  "submissions": [
+    {
+      "id": "s-1",
+      "userId": "u-1",
+      "matchId": "m-a1",
+      "market": "1X2",
+      "prediction": "Mexico to win",
+      "odds": 2.15,
+      "stake": 15,
+      "status": "won",
+      "resultAmount": 32.25,
+      "createdAt": "2026-05-03T10:00:00.000Z"
+    },
+    {
+      "id": "s-2",
+      "userId": "u-1",
+      "matchId": "m-b1",
+      "market": "Over/Under 2.5",
+      "prediction": "Over 2.5 goals",
+      "odds": 1.95,
+      "stake": 20,
+      "status": "won",
+      "resultAmount": 39.0,
+      "createdAt": "2026-05-05T12:30:00.000Z"
+    },
+    {
+      "id": "s-3",
+      "userId": "u-1",
+      "matchId": "m-c1",
+      "market": "BTTS",
+      "prediction": "Both teams score",
+      "odds": 1.88,
+      "stake": 20,
+      "status": "lost",
+      "resultAmount": 0,
+      "createdAt": "2026-05-07T16:10:00.000Z"
+    },
+    {
+      "id": "s-4",
+      "userId": "u-2",
+      "matchId": "m-d1",
+      "market": "Asian Handicap",
+      "prediction": "Favorite -1",
+      "odds": 2.35,
+      "stake": 12,
+      "status": "won",
+      "resultAmount": 28.2,
+      "createdAt": "2026-05-06T14:45:00.000Z"
+    },
+    {
+      "id": "s-5",
+      "userId": "u-2",
+      "matchId": "m-e1",
+      "market": "Correct Score",
+      "prediction": "2-1",
+      "odds": 7.5,
+      "stake": 6,
+      "status": "won",
+      "resultAmount": 45.0,
+      "createdAt": "2026-05-08T09:55:00.000Z"
+    },
+    {
+      "id": "s-6",
+      "userId": "u-3",
+      "matchId": "m-f1",
+      "market": "1X2",
+      "prediction": "Draw",
+      "odds": 3.4,
+      "stake": 10,
+      "status": "lost",
+      "resultAmount": 0,
+      "createdAt": "2026-05-09T19:15:00.000Z"
+    },
+    {
+      "id": "s-7",
+      "userId": "u-3",
+      "matchId": "m-g1",
+      "market": "BTTS",
+      "prediction": "Yes",
+      "odds": 1.75,
+      "stake": 15,
+      "status": "won",
+      "resultAmount": 26.25,
+      "createdAt": "2026-05-10T08:25:00.000Z"
+    },
+    {
+      "id": "s-8",
+      "userId": "u-4",
+      "matchId": "m-h1",
+      "market": "Over/Under 2.5",
+      "prediction": "Under 2.5 goals",
+      "odds": 2.05,
+      "stake": 10,
+      "status": "pending",
+      "resultAmount": 0,
+      "createdAt": "2026-05-11T17:20:00.000Z"
+    }
+  ]
+}

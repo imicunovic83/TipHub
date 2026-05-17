@@ -5,12 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import FavoritesCounter from "@/components/FavoritesCounter";
+import AuthControls from "@/components/AuthControls";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/tips", label: "Tips" },
+  { href: "/competition", label: "Community" },
   { href: "/tipsters", label: "Tipsters" },
   { href: "/bookmakers", label: "Bookmakers" },
+  { href: "/tipster/apply", label: "Become a tipster" },
   { href: "/about", label: "About" },
 ];
 
@@ -88,6 +91,7 @@ export default function MobileMenu() {
             </nav>
 
             <div className="mobile-menu-footer">
+              <AuthControls />
               <FavoritesCounter />
               <ThemeToggle />
             </div>
