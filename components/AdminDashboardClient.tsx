@@ -29,11 +29,24 @@ interface CompetitionSubmission {
   createdAt: string;
 }
 
+interface PendingTip {
+  id: string;
+  tipsterName: string;
+  matchId: string;
+  market: string;
+  prediction: string;
+  oddsValue: number;
+  oddsBookmaker: string;
+  shortReason: string;
+  postedAt: string;
+}
+
 export default function AdminDashboardClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingApplications, setPendingApplications] = useState<TipsterApplication[]>([]);
   const [pendingSubmissions, setPendingSubmissions] = useState<CompetitionSubmission[]>([]);
+  const [pendingTips, setPendingTips] = useState<PendingTip[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
 
@@ -84,6 +97,7 @@ export default function AdminDashboardClient() {
 
     setPendingApplications(data.pendingApplications || []);
     setPendingSubmissions(data.pendingSubmissions || []);
+    setPendingTips(data.pendingTips || []);
     setLoading(false);
   }
 
@@ -193,6 +207,40 @@ export default function AdminDashboardClient() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </div>
+
+          <div className="panel">
+            <h4 className="title-section">Pending tipster tips</h4>
+            {pendingTips.length === 0 ? (
+              <p>No tipster tips are waiting for resolution.</p>
+            ) : (
+              <div className="stack">
+                {pendingTips.map((tip) => (
+                  <div key={tip.id} className="panel">
+                    <div className="stack">
+                      <div className="row" style={{ justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+                        <div>
+                          <strong>{tip.tipsterName}</strong> · <span className="text-muted-sm">{tip.market}</span>
+                          <p className="text-muted-sm">
+                            {tip.matchId} · {tip.oddsBookmaker} @ {tip.oddsValue} ·
+                            posted {new Date(tip.postedAt).toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="row" style={{ gap: "0.5rem" }}>
+                          <button type="button" className="btn btn-primary" onClick={() => handleAction("resolve-tip", { tipId: tip.id, status: "won" })}>
+                            Mark won
+                          </button>
+                          <button type="button" className="btn btn-secondary" onClick={() => handleAction("resolve-tip", { tipId: tip.id, status: "lost" })}>
+                            Mark lost
+                          </button>
+                        </div>
+                      </div>
+                      <p><strong>{tip.prediction}</strong> — {tip.shortReason}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

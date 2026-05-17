@@ -5,6 +5,7 @@ import {
   rejectTipsterApplication,
 } from "@/lib/applications";
 import { getPendingSubmissions, resolveCompetitionSubmission } from "@/lib/competition";
+import { getPendingTips, resolveTip } from "@/lib/tipster-tips";
 import {
   getAccessTokenFromRequest,
   getSupabaseServerClient,
@@ -23,12 +24,13 @@ export async function GET(request: Request) {
   const admin = await requireAdmin(request);
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const [pendingApplications, pendingSubmissions] = await Promise.all([
+  const [pendingApplications, pendingSubmissions, pendingTips] = await Promise.all([
     getPendingApplications(),
     getPendingSubmissions(),
+    getPendingTips(),
   ]);
 
-  return NextResponse.json({ pendingApplications, pendingSubmissions });
+  return NextResponse.json({ pendingApplications, pendingSubmissions, pendingTips });
 }
 
 export async function POST(request: Request) {
@@ -70,6 +72,22 @@ export async function POST(request: Request) {
     const application = await rejectTipsterApplication(applicationId, admin.user.id, note);
     if (!application) return NextResponse.json({ error: "Application not found." }, { status: 404 });
     return NextResponse.json({ success: true, application });
+  }
+
+  if (action === "resolve-tip") {
+    const tipId = body.tipId as string;
+    const status = body.status as "won" | "lost";
+    if (status !== "won" && status !== "lost") {
+      return NextResponse.json({ error: "status must be 'won' or 'lost'." }, { status: 400 });
+    }
+    try {
+      const tip = await resolveTip(tipId, status);
+      if (!tip) return NextResponse.json({ error: "Tip not found or already resolved." }, { status: 404 });
+      return NextResponse.json({ success: true, tip });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to resolve tip.";
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
   }
 
   if (action === "resolve-submission") {

@@ -288,6 +288,9 @@ export default function AuthControls() {
 
       <span className="text-muted-sm" style={{ marginRight: "0.5rem" }}>{String(name).split(" ")[0]}</span>
       <button type="button" onClick={handleLogout} className="btn btn-link">Log out</button>
+      {(user.user_metadata?.role === "tipster" || user.user_metadata?.role === "admin") ? (
+        <Link href="/tipster/dashboard" className="btn btn-link" style={{ marginLeft: "0.5rem" }}>My tips</Link>
+      ) : null}
       {user.user_metadata?.role === "admin" ? <Link href="/admin" className="btn btn-primary" style={{ marginLeft: "0.5rem" }}>Admin</Link> : null}
 
       {msg ? <div className="badge badge--pitch" style={{ marginLeft: 8 }}>{msg}</div> : null}
