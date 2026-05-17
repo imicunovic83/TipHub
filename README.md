@@ -168,5 +168,4 @@ all `/api/*`) and static prerender for everything else.
 
 ## License
 
-This project has no license file yet; treat it as "all rights reserved"
-until one is added.
+[MIT](./LICENSE) © 2026 Ilija Micunovic
