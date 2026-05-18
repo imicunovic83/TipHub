@@ -125,6 +125,30 @@ create index on public.analytics_events (ts desc);
 create index on public.analytics_events (name);
 ```
 
+## 3a. Realtime leaderboard
+
+The community competition leaderboard (`/competition`) subscribes to
+postgres changes on `competition_submissions` so rankings update live
+when admins resolve a tip or new tips come in. Realtime broadcasts go
+through RLS, so the table needs a read policy *and* must be added to
+the `supabase_realtime` publication:
+
+```sql
+create policy "Anon read competition submissions for realtime"
+  on public.competition_submissions for select to anon
+  using (true);
+
+create policy "Authenticated read competition submissions for realtime"
+  on public.competition_submissions for select to authenticated
+  using (true);
+
+alter publication supabase_realtime add table public.competition_submissions;
+```
+
+The exposed columns contain no PII (opaque `user_id`, `match_id`,
+`market`, `prediction`, `odds`, `stake`, `status`). Email + display
+name live in `competition_users`, which keeps its server-only access.
+
 ## 4. Auth URL configuration
 
 Supabase only honors `redirectTo` values that match the project's

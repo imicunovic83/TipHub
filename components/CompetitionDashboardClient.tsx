@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Match } from "@/lib/data";
 import type { CompetitionLeaderboardEntry } from "@/lib/competition";
+import { getSupabaseClient } from "@/lib/supabase";
 
 const MARKET_OPTIONS = [
   "1X2",
@@ -36,6 +37,7 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
   const [submissions, setSubmissions] = useState<number>(0);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isLive, setIsLive] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -48,6 +50,24 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
 
   useEffect(() => {
     fetchLeaderboard();
+
+    const supabase = getSupabaseClient();
+    const channel = supabase
+      .channel("competition-leaderboard")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "competition_submissions" },
+        () => {
+          fetchLeaderboard();
+        },
+      )
+      .subscribe((channelStatus) => {
+        setIsLive(channelStatus === "SUBSCRIBED");
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   async function fetchLeaderboard() {
@@ -249,7 +269,15 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
       </div>
 
       <div className="panel">
-        <h3 className="title-section">Leaderboard</h3>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
+          <h3 className="title-section" style={{ margin: 0 }}>Leaderboard</h3>
+          <span
+            className={isLive ? "badge badge--pitch" : "badge badge--orange"}
+            title={isLive ? "Updates as submissions resolve in real time" : "Reconnecting…"}
+          >
+            {isLive ? "Live" : "Offline"}
+          </span>
+        </div>
         <table className="competition-leaderboard">
           <thead>
             <tr>
