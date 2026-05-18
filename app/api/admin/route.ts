@@ -12,6 +12,7 @@ import {
   getSupabaseServerClient,
   getSupabaseUserFromToken,
 } from "@/lib/supabase-server";
+import { sendApplicationApprovedEmail, sendApplicationRejectedEmail } from "@/lib/email";
 
 async function requireAdmin(request: Request) {
   const token = getAccessTokenFromRequest(request);
@@ -47,6 +48,8 @@ export async function POST(request: Request) {
     const application = await approveTipsterApplication(applicationId, admin.user.id, note);
     if (!application) return NextResponse.json({ error: "Application not found." }, { status: 404 });
 
+    let approvedEmail: string | undefined;
+    let approvedName = "Tipster";
     try {
       const serviceClient = getSupabaseServerClient();
       const { data: targetUser } = await serviceClient.auth.admin.getUserById(application.userId);
@@ -61,6 +64,8 @@ export async function POST(request: Request) {
         (typeof existingMetadata.full_name === "string" && existingMetadata.full_name.trim()) ||
         targetUser?.user?.email ||
         "Tipster";
+      approvedEmail = targetUser?.user?.email ?? undefined;
+      approvedName = displayName;
       await ensureTipsterProfile({
         userId: application.userId,
         name: displayName,
@@ -75,6 +80,14 @@ export async function POST(request: Request) {
       );
     }
 
+    if (approvedEmail) {
+      try {
+        await sendApplicationApprovedEmail({ to: approvedEmail, name: approvedName });
+      } catch (error) {
+        console.error("Failed to send approval email:", error);
+      }
+    }
+
     return NextResponse.json({ success: true, application });
   }
 
@@ -83,6 +96,21 @@ export async function POST(request: Request) {
     const note = typeof body.note === "string" ? body.note : undefined;
     const application = await rejectTipsterApplication(applicationId, admin.user.id, note);
     if (!application) return NextResponse.json({ error: "Application not found." }, { status: 404 });
+
+    try {
+      const serviceClient = getSupabaseServerClient();
+      const { data: targetUser } = await serviceClient.auth.admin.getUserById(application.userId);
+      const email = targetUser?.user?.email;
+      const metadata = targetUser?.user?.user_metadata ?? {};
+      const name =
+        (typeof metadata.full_name === "string" && metadata.full_name.trim()) || email || "there";
+      if (email) {
+        await sendApplicationRejectedEmail({ to: email, name, note: application.note });
+      }
+    } catch (error) {
+      console.error("Failed to send rejection email:", error);
+    }
+
     return NextResponse.json({ success: true, application });
   }
 
