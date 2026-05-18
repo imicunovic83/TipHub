@@ -287,11 +287,35 @@ export default function AuthControls() {
       />
 
       <span className="text-muted-sm" style={{ marginRight: "0.5rem" }}>{String(name).split(" ")[0]}</span>
-      <button type="button" onClick={handleLogout} className="btn btn-link">Log out</button>
       {(user.user_metadata?.role === "tipster" || user.user_metadata?.role === "admin") ? (
-        <Link href="/tipster/dashboard" className="btn btn-link" style={{ marginLeft: "0.5rem" }}>My tips</Link>
+        <Link href="/tipster/dashboard" className="btn btn-link" style={{ marginRight: "0.5rem" }}>My tips</Link>
       ) : null}
-      {user.user_metadata?.role === "admin" ? <Link href="/admin" className="btn btn-primary" style={{ marginLeft: "0.5rem" }}>Admin</Link> : null}
+      {user.user_metadata?.role === "admin" ? <Link href="/admin" className="btn btn-primary" style={{ marginRight: "0.5rem" }}>Admin</Link> : null}
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="btn btn-logout"
+        aria-label="Log out"
+        title="Log out"
+      >
+        <svg
+          className="btn-logout-icon"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        <span>Log out</span>
+      </button>
 
       {msg ? <div className="badge badge--pitch" style={{ marginLeft: 8 }}>{msg}</div> : null}
     </div>

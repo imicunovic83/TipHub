@@ -3,6 +3,7 @@ import {
   getAllTips,
   getAllTipsters,
   getTipBySlug,
+  getTipsByTipster,
   getTipsterBySlug,
   type BookmakerSlug,
   type Tip,
@@ -20,6 +21,14 @@ import {
   getUserTipById,
   type UserTip,
 } from "@/lib/tipster-tips";
+
+// Auto-sunset thresholds for the demo seed data. Once enough real tipsters /
+// resolved real tips exist, the seeds disappear from list views so the public
+// pages show only real activity. Per-slug pages stay addressable so existing
+// bookmarks to seed tipsters/tips still resolve (marked isDemo so the UI can
+// explain the entry is sample data).
+const DEMO_TIPSTER_SUNSET_AT = 3; // real tipster profiles
+const DEMO_TIP_SUNSET_AT = 5;     // resolved (won/lost) real tips
 
 function bookmakerSlugIfKnown(slug: string): BookmakerSlug {
   const known = bookmakers.find((b) => b.slug === slug);
@@ -102,17 +111,27 @@ function groupTipsByUser(tips: UserTip[]): Map<string, UserTip[]> {
   return map;
 }
 
+function withDemoFlag<T extends Tipster | Tip>(items: T[]): T[] {
+  return items.map((item) => ({ ...item, isDemo: true }));
+}
+
 export async function getMergedTipsters(): Promise<Tipster[]> {
-  const seed = getAllTipsters();
   const [profiles, allUserTips] = await Promise.all([getAllTipsterProfiles(), getAllUserTips()]);
   const tipsByUser = groupTipsByUser(allUserTips);
   const dbTipsters = profiles.map((p) => profileToTipster(p, tipsByUser.get(p.userId) ?? []));
-  return [...seed, ...dbTipsters];
+
+  if (dbTipsters.length >= DEMO_TIPSTER_SUNSET_AT) {
+    return dbTipsters;
+  }
+  return [...withDemoFlag(getAllTipsters()), ...dbTipsters];
 }
 
+// Per-slug lookup keeps seed entries addressable even after list-view sunset,
+// so existing bookmarks and shared links keep working. The returned tipster
+// carries isDemo=true when it's a seed.
 export async function getMergedTipsterBySlug(slug: string): Promise<Tipster | undefined> {
   const seed = getTipsterBySlug(slug);
-  if (seed) return seed;
+  if (seed) return { ...seed, isDemo: true };
   const profile = await getTipsterProfileBySlug(slug);
   if (!profile) return undefined;
   const tips = await getTipsForTipster(profile.userId);
@@ -120,7 +139,6 @@ export async function getMergedTipsterBySlug(slug: string): Promise<Tipster | un
 }
 
 export async function getMergedTips(): Promise<Tip[]> {
-  const seed = getAllTips();
   const [profiles, allUserTips] = await Promise.all([getAllTipsterProfiles(), getAllUserTips()]);
   const slugByUserId = new Map(profiles.map((p) => [p.userId, p.slug]));
 
@@ -133,17 +151,30 @@ export async function getMergedTips(): Promise<Tip[]> {
     })
     .filter((t): t is Tip => t !== null);
 
-  return [...seed, ...dbTips];
+  const resolvedRealCount = dbTips.filter((t) => t.status === "won" || t.status === "lost").length;
+  if (resolvedRealCount >= DEMO_TIP_SUNSET_AT) {
+    return dbTips;
+  }
+  return [...withDemoFlag(getAllTips()), ...dbTips];
 }
 
 export async function getMergedTipsByTipster(tipsterSlug: string): Promise<Tip[]> {
-  const all = await getMergedTips();
-  return all.filter((t) => t.tipsterSlug === tipsterSlug);
+  // Seed tipster: return their seed tips directly (addressable even after
+  // sunset). Real tipster: build from DB tips. Avoids paying the merge cost
+  // and the sunset filter when we only want one tipster's slice.
+  const seedTipster = getTipsterBySlug(tipsterSlug);
+  if (seedTipster) {
+    return withDemoFlag(getTipsByTipster(tipsterSlug));
+  }
+  const profile = await getTipsterProfileBySlug(tipsterSlug);
+  if (!profile) return [];
+  const userTips = await getTipsForTipster(profile.userId);
+  return userTips.map((t) => userTipToTip(t, profile.slug));
 }
 
 export async function getMergedTipBySlug(slug: string): Promise<Tip | undefined> {
   const seed = getTipBySlug(slug);
-  if (seed) return seed;
+  if (seed) return { ...seed, isDemo: true };
 
   const userTip = await getUserTipById(slug);
   if (!userTip) return undefined;

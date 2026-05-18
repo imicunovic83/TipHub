@@ -52,6 +52,7 @@ export default function TipCard({ tip, tipsterName }: { tip: Tip; tipsterName?: 
         <span className="group-chip" aria-label={`Group ${match.group}`}>{match.group}</span>
         <Badge variant={variant}>{tip.market}</Badge>
         {tip.isPremium ? <Badge variant="gold">Premium</Badge> : null}
+        {tip.isDemo ? <span className="sample-badge sample-badge--inline" title="Sample tip — shown until real tipsters post their own">Sample</span> : null}
         {consensusCount > 0 ? (
           <span className="consensus-chip" title={`${consensusCount} other tipster${consensusCount === 1 ? "" : "s"} on this match`}>
             👥 +{consensusCount} more

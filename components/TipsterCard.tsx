@@ -6,6 +6,7 @@ export default function TipsterCard({ tipster }: { tipster: Tipster }) {
   return (
     <Link href={`/tipsters/${tipster.slug}`} className="card-link">
       {tipster.isHot ? <span className="tipster-hot-badge">★ Hot</span> : null}
+      {tipster.isDemo ? <span className="sample-badge" title="Sample profile — shown until real tipsters fill in">Sample</span> : null}
 
       <div className="tipster-row">
         <Avatar seed={tipster.slug} gender={tipster.gender} alt={tipster.name} />

@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { bestOddsForTip, getBookmakerStats, getAllTips, type Bookmaker, type Tip } from "@/lib/data";
 import SectionTitle from "@/components/SectionTitle";
 import BookmakerLogo from "@/components/BookmakerLogo";
 import TipCard from "@/components/TipCard";
+
+export const metadata: Metadata = {
+  title: "Bookmakers — odds comparison",
+  description:
+    "Mozzart, Maxbet, Soccerbet, Meridian and Admiral compared on every tip in our catalog. See which operator offers the best odds most often, and find tips where each one stands out.",
+  alternates: { canonical: "/bookmakers" },
+};
 
 export default function BookmakersPage() {
   const stats = getBookmakerStats();

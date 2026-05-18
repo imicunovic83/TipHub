@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { bestOddsForTip, getMatchById, getTeamByCode } from "@/lib/data";
@@ -9,6 +10,39 @@ import BookmakerOddsTable from "@/components/BookmakerOddsTable";
 import Flag from "@/components/Flag";
 import Avatar from "@/components/Avatar";
 import ShareButton from "@/components/ShareButton";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const tip = await getMergedTipBySlug(slug);
+  if (!tip) {
+    return { title: "Tip not found", robots: { index: false, follow: false } };
+  }
+  const match = getMatchById(tip.matchId);
+  const home = match ? getTeamByCode(match.homeCode) : undefined;
+  const away = match ? getTeamByCode(match.awayCode) : undefined;
+  const tipster = await getMergedTipsterBySlug(tip.tipsterSlug);
+  const best = bestOddsForTip(tip);
+
+  const fixture = home && away ? `${home.name} vs ${away.name}` : tip.market;
+  const tipsterName = tipster?.name ?? "TipHub tipster";
+  const title = `${tip.prediction} — ${fixture}`;
+  const description = `${tipsterName}'s ${tip.market} pick for ${fixture}: ${tip.prediction} @ ${best.value.toFixed(2)} (best ${best.bookmaker.name}). ${tip.shortReason}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/tips/${tip.slug}` },
+    openGraph: { type: "article", title, description, url: `/tips/${tip.slug}` },
+    twitter: { card: "summary_large_image", title, description },
+    robots: tip.isDemo
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
+  };
+}
 
 export default async function TipDetailPage({
   params,
@@ -48,6 +82,13 @@ export default async function TipDetailPage({
         <nav className="back-nav">
           <Link href="/tips">← Back to all tips</Link>
         </nav>
+
+        {tip.isDemo ? (
+          <div className="demo-banner demo-banner--inline" role="note">
+            This is a <strong>sample tip</strong> used to demonstrate how the catalog works —
+            it is not a live pick from a registered tipster.
+          </div>
+        ) : null}
 
         <div className="row" style={{ gap: "0.5rem", marginBottom: "0.75rem" }}>
           <span className="group-chip">{match.group}</span>
@@ -102,7 +143,9 @@ export default async function TipDetailPage({
               <h2 className="surface-title">Bookmaker odds comparison</h2>
               <BookmakerOddsTable tip={tip} />
               <p className="disclaimer">
-                Sample odds shown for demonstration only — they do not reflect live prices at the named bookmakers.
+                {tip.isDemo
+                  ? "Sample odds shown for demonstration only — they do not reflect live prices at the named bookmakers."
+                  : "Odds shown were posted by the tipster at the time of writing. Live prices on each bookmaker site may differ — click through to verify before placing a bet."}
               </p>
             </div>
           </div>

@@ -29,7 +29,7 @@ export default function MobileMenu() {
   useEffect(() => {
     if (!open) return;
     const onResize = () => {
-      if (window.innerWidth > 720) setOpen(false);
+      if (window.innerWidth > 960) setOpen(false);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);

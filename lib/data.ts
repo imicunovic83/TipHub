@@ -67,6 +67,7 @@ export interface Tipster {
   bestStreak: number;           // consecutive wins
   joinedYear: number;
   isHot: boolean;               // top-3 by win rate
+  isDemo?: boolean;             // sample seed entry, not a real registered tipster
 }
 
 export interface OddsOffer {
@@ -88,6 +89,7 @@ export interface Tip {
   status: TipStatus;
   isPremium: boolean;
   postedAtISO: string;
+  isDemo?: boolean;       // sample seed entry, not posted by a real tipster
 }
 
 // ---------------------------------------------------------------------------

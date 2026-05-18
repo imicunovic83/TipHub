@@ -514,6 +514,55 @@ svg {
   text-decoration: underline;
 }
 
+/* Log out — outlined pill, neutral by default, red on hover to signal a
+   state-changing/destructive action without screaming on idle. */
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--slate-700);
+  background: var(--white);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  box-shadow: none;
+  transition: color .15s ease, background .15s ease, border-color .15s ease, transform .15s ease;
+}
+
+.btn-logout:hover {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.btn-logout:active {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.btn-logout:focus-visible {
+  outline: 3px solid rgb(239 68 68 / 0.25);
+  outline-offset: 2px;
+}
+
+.btn-logout-icon {
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .btn-logout {
+  color: #cbd5e1;
+  background: transparent;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .btn-logout:hover {
+  color: #fecaca;
+  background: rgb(127 29 29 / 0.25);
+  border-color: #7f1d1d;
+}
+
 /* Auth controls styling */
 .auth-controls {
   display: inline-flex;
@@ -538,7 +587,7 @@ svg {
   font-weight: 700;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 960px) {
   .auth-controls { gap: 0.4rem; }
   .auth-cta { padding: 0.45rem 0.65rem; }
 }
@@ -1780,7 +1829,7 @@ body {
   border-top: 1px solid var(--border);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 960px) {
   .hamburger-btn {
     display: inline-flex;
   }
@@ -2171,6 +2220,70 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   box-shadow: 0 2px 6px rgb(217 119 6 / 0.4);
+}
+
+/* Sample data pill — marks seed tipsters / tips while they're still being
+   shown alongside (or in absence of) real registered tipsters. */
+.sample-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  background: var(--slate-100);
+  color: var(--slate-700);
+  border: 1px solid var(--slate-300);
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sample-badge--inline {
+  position: static;
+  background: var(--slate-50);
+}
+
+[data-theme="dark"] .sample-badge {
+  background: rgb(51 65 85 / 0.6);
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+/* Banner shown on list pages while demo seed entries are still in the mix. */
+.demo-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--gold-50);
+  border: 1px solid var(--gold-200);
+  color: var(--slate-800);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.demo-banner--inline {
+  margin-bottom: 1rem;
+  background: var(--slate-50);
+  border-color: var(--border);
+  color: var(--slate-700);
+}
+
+[data-theme="dark"] .demo-banner {
+  background: rgb(180 83 9 / 0.18);
+  border-color: rgb(180 83 9 / 0.4);
+  color: #fef3c7;
+}
+
+[data-theme="dark"] .demo-banner--inline {
+  background: rgb(30 41 59 / 0.5);
+  border-color: #334155;
+  color: #cbd5e1;
 }
 
 /* Profile hero (tipster detail) */
