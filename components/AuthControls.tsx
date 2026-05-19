@@ -199,11 +199,25 @@ export default function AuthControls() {
           });
         }
 
-        // subscribe to auth changes
-        const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+        // Subscribe to auth changes. session.user inside the callback is the
+        // user decoded from the cached JWT, so its user_metadata can lag
+        // behind the server (e.g. right after an admin-side update from the
+        // avatar picker). Refetch from the auth server inside the callback
+        // so we render the fresh metadata, not the stale JWT snapshot.
+        const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
           if (!mounted) return;
-          setUser(session?.user ?? null);
-          if (session?.access_token) {
+          if (!session) {
+            setUser(null);
+            return;
+          }
+          try {
+            const { data: fresh } = await supabase.auth.getUser();
+            if (!mounted) return;
+            setUser(fresh?.user ?? session.user);
+          } catch {
+            setUser(session.user);
+          }
+          if (session.access_token) {
             fetch("/api/auth/session", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
