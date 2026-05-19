@@ -24,8 +24,9 @@ export default function PrivacyPage() {
           <h2 className="surface-title">Who we are</h2>
           <p className="text-muted">
             TipHub is a community tipster platform operated by an independent team based in Serbia.
-            We can be reached at <a href="mailto:hello@tiphub.rs" className="text-link">hello@tiphub.rs</a>.
-            We do not act as a betting operator and we do not take wagers.
+            Public contact details (data-protection email, postal address) will be published here
+            ahead of the public launch — this page is a working draft for the private beta.
+            TipHub does not act as a betting operator and does not take wagers.
           </p>
         </div>
 
@@ -63,9 +64,11 @@ export default function PrivacyPage() {
           <h2 className="surface-title">Your rights</h2>
           <p className="text-muted">
             Under GDPR you have the right to access, correct, export, or delete your personal data,
-            and to object to specific processing. Email us at <a href="mailto:hello@tiphub.rs" className="text-link">hello@tiphub.rs</a>{" "}
-            and we will respond within 30 days. You can unsubscribe from the newsletter at any time
-            using the link at the bottom of every email — no account required.
+            and to object to specific processing. A data-protection contact address will be added
+            here before the public launch; during the private beta, the fastest path is to delete
+            your account from the profile page (account deletion cascades to all related rows in
+            our database). You can unsubscribe from the newsletter at any time using the link at
+            the bottom of every email — no account required.
           </p>
         </div>
 

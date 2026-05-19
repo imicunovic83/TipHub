@@ -57,9 +57,8 @@ export default function AccountEditForm({
       </div>
 
       <p className="text-muted-sm" style={{ margin: 0 }}>
-        Need to change your name or email? Drop a line at{" "}
-        <a href="mailto:hello@tiphub.rs" className="text-link">hello@tiphub.rs</a>{" "}
-        — those changes go through manual review during beta.
+        Name and email changes are paused during beta — we&apos;ll add a request form
+        for them shortly.
       </p>
 
       <div className="row" style={{ gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>

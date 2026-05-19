@@ -131,10 +131,11 @@ export default function AboutPage() {
         <div className="surface">
           <h2 className="surface-title">Get in touch</h2>
           <p className="text-muted">
-            Questions, feedback, bug reports, or a tipster application that doesn&apos;t fit the
-            form — drop a line at{" "}
-            <a href="mailto:hello@tiphub.rs" className="text-link">hello@tiphub.rs</a>. Press and
-            partnership enquiries welcome at the same address.
+            We&apos;re in private beta and the public contact channels aren&apos;t live yet. If
+            you&apos;d like to become a tipster, use the{" "}
+            <Link href="/tipster/apply" className="text-link">apply page</Link> — it takes about
+            ten minutes. For everything else, hang tight: a contact form lands shortly after the
+            public launch.
           </p>
         </div>
       </div>

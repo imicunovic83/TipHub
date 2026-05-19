@@ -62,9 +62,8 @@ export default function TipsterProfileEditor({ initial }: TipsterProfileEditorPr
           aria-readonly="true"
         />
         <p className="text-muted-sm" style={{ margin: 0 }}>
-          Set at approval — can&apos;t be changed. Email{" "}
-          <a href="mailto:hello@tiphub.rs" className="text-link">hello@tiphub.rs</a>{" "}
-          if you need a new one.
+          Set at approval — can&apos;t be changed self-service. We&apos;ll add a slug-change
+          request flow after the public launch.
         </p>
       </div>
 

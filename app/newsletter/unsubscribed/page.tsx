@@ -23,12 +23,12 @@ const MESSAGES: Record<Status, { eyebrow: string; title: string; body: string }>
   invalid: {
     eyebrow: "Link expired",
     title: "We couldn't process that link",
-    body: "The unsubscribe link is invalid or already used. If you're still getting emails, email hello@tiphub.rs and we'll remove you manually.",
+    body: "The unsubscribe link is invalid or already used. If you're still getting emails, just stop opening them — we'll surface a contact form once the public launch is live.",
   },
   error: {
     eyebrow: "Something went wrong",
     title: "Unsubscribe failed",
-    body: "We hit an unexpected error. Please try the link again, or contact hello@tiphub.rs.",
+    body: "We hit an unexpected error. Please try the link again — if it keeps failing, just stop opening newsletter emails and we'll get a contact form up soon.",
   },
 };
 

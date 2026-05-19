@@ -28,7 +28,7 @@ const MESSAGES: Record<Status, { eyebrow: string; title: string; body: string }>
   error: {
     eyebrow: "Something went wrong",
     title: "Confirmation didn't go through",
-    body: "We hit an unexpected error confirming your subscription. Please try the link again, or contact hello@tiphub.rs if it keeps failing.",
+    body: "We hit an unexpected error confirming your subscription. Please try the link again — if it keeps failing, try resubscribing from the footer.",
   },
 };
 
