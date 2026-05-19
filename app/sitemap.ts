@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/site";
 import { getMergedTips, getMergedTipsters } from "@/lib/merged-data";
+import { getAllPosts } from "@/lib/blog";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
@@ -12,9 +13,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/tipsters`,    lastModified: now, changeFrequency: "daily",   priority: 0.9 },
     { url: `${base}/bookmakers`,  lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
     { url: `${base}/competition`, lastModified: now, changeFrequency: "daily",   priority: 0.7 },
+    { url: `${base}/blog`,        lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
     { url: `${base}/about`,       lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/contact`,     lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ];
+
+  const postRoutes: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+    url: `${base}/blog/${post.slug}`,
+    lastModified: new Date(post.publishedAt),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
 
   const [tipsters, tips] = await Promise.all([getMergedTipsters(), getMergedTips()]);
 
@@ -32,5 +41,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: tip.isDemo ? 0.3 : 0.6,
   }));
 
-  return [...staticRoutes, ...tipsterRoutes, ...tipRoutes];
+  return [...staticRoutes, ...postRoutes, ...tipsterRoutes, ...tipRoutes];
 }

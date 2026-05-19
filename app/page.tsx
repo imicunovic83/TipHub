@@ -1,12 +1,15 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getAllMatches, bookmakers } from "@/lib/data";
 import { getMergedTips, getMergedTipsters } from "@/lib/merged-data";
+import { getRecentPosts } from "@/lib/blog";
 import TipCard from "@/components/TipCard";
 import TipsterCard from "@/components/TipsterCard";
 
 export default async function Home() {
   const [tips, tipsters] = await Promise.all([getMergedTips(), getMergedTipsters()]);
   const matches = getAllMatches();
+  const latestPosts = getRecentPosts(3);
 
   // Featured tips: top 3 by confidence, then most recent.
   const featured = [...tips]
@@ -99,6 +102,62 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {latestPosts.length ? (
+        <section className="pad-section">
+          <div className="container stack">
+            <div className="section-head">
+              <span className="eyebrow">From the blog</span>
+              <h2 className="title-page">Latest editorial &amp; previews</h2>
+              <p className="text-muted max-prose">
+                Long-form match breakdowns and community guides — updated weekly.
+              </p>
+            </div>
+
+            <div className="latest-posts">
+              {latestPosts.map((post) => (
+                <article key={post.slug} className="blog-card">
+                  <Link href={`/blog/${post.slug}`} className="blog-card-link">
+                    {post.coverImage ? (
+                      <div className="blog-card-cover">
+                        <Image
+                          src={post.coverImage}
+                          alt=""
+                          width={1200}
+                          height={630}
+                          className="blog-card-cover-img"
+                        />
+                      </div>
+                    ) : (
+                      <div className="blog-card-cover blog-card-cover--placeholder" aria-hidden="true">
+                        <span>TipHub</span>
+                      </div>
+                    )}
+                    <div className="blog-card-body">
+                      <div className="blog-card-meta">
+                        <span className="blog-kind-pill">
+                          {post.kind === "match-preview" ? "Match preview" : "Article"}
+                        </span>
+                        <time dateTime={post.publishedAt}>
+                          {new Date(post.publishedAt).toLocaleDateString("en-GB", {
+                            day: "numeric", month: "short", year: "numeric",
+                          })}
+                        </time>
+                      </div>
+                      <h3 className="blog-card-title">{post.title}</h3>
+                      <p className="blog-card-desc">{post.description}</p>
+                    </div>
+                  </Link>
+                </article>
+              ))}
+            </div>
+
+            <div>
+              <Link href="/blog" className="btn btn-primary">Read the blog →</Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
     </>
   );
 }
