@@ -11,6 +11,7 @@ create table public.profiles (
   full_name text,
   favorite_tipster text,
   email text,
+  avatar_url text,
   created_at timestamptz not null default now()
 );
 
@@ -27,6 +28,15 @@ create policy "Insert own profile"
 create policy "Update own profile"
   on public.profiles for update to authenticated
   using (auth.uid() = id) with check (auth.uid() = id);
+```
+
+### Migration: adding `avatar_url` to an existing project
+
+If your project predates the avatar picker (column was added 2026-05-19),
+run this once in the SQL Editor:
+
+```sql
+alter table public.profiles add column if not exists avatar_url text;
 ```
 
 ## 2. Auto-create profile row on signup

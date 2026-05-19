@@ -2948,6 +2948,19 @@ body {
   font-weight: 600;
 }
 
+.trusted-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold-100, #fef3c7), var(--gold-200, #fde68a));
+  color: var(--gold-700, #b45309);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 /* Home page latest-posts strip */
 .latest-posts {
   display: grid;
@@ -3025,6 +3038,65 @@ body {
     grid-template-columns: 1fr;
     gap: 0.2rem;
   }
+}
+
+/* Avatar picker (rendered on /profile) */
+.avatar-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 0.5rem;
+}
+
+.avatar-picker-tile {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  background: var(--slate-100);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.avatar-picker-tile:hover:not(:disabled) {
+  border-color: var(--pitch-400);
+  background: var(--white);
+}
+
+.avatar-picker-tile.is-active {
+  border-color: var(--pitch-700);
+  background: var(--white);
+  box-shadow: 0 0 0 2px var(--pitch-200);
+}
+
+.avatar-picker-tile:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.avatar-picker-tile img {
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+}
+
+.avatar-picker-spinner {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-lg);
+  background-image:
+    radial-gradient(circle at center, var(--pitch-700) 4px, transparent 5px);
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: avatar-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes avatar-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.9; }
 }
 
 /* Header auth profile link (avatar + first name pill) */

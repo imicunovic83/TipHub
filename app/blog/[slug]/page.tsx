@@ -4,9 +4,13 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { getMatchById, getTeamByCode, getTipsByMatch } from "@/lib/data";
+import { getMergedTipsters } from "@/lib/merged-data";
 import SectionTitle from "@/components/SectionTitle";
 import ShareButton from "@/components/ShareButton";
 import TipCard from "@/components/TipCard";
+
+const TRUSTED_MIN_RESOLVED = 10;
+const TRUSTED_MIN_WIN_RATE = 55;
 
 export const dynamicParams = false;
 
@@ -70,6 +74,17 @@ export default async function BlogPostPage({
   const away = relatedMatch ? getTeamByCode(relatedMatch.awayCode) : undefined;
   const matchTips = relatedMatch ? getTipsByMatch(relatedMatch.id) : [];
 
+  // If the post is authored by a real tipster (matched by display name) with
+  // a strong track record, surface a "Trusted" pill + a one-line stats hint.
+  const tipsters = await getMergedTipsters();
+  const authorTipster = tipsters.find(
+    (t) => !t.isDemo && t.name.toLowerCase() === post.author.toLowerCase(),
+  );
+  const isTrustedAuthor =
+    !!authorTipster &&
+    authorTipster.totalTips >= TRUSTED_MIN_RESOLVED &&
+    authorTipster.winRate >= TRUSTED_MIN_WIN_RATE;
+
   return (
     <section className="pad-section">
       <div className="container">
@@ -89,7 +104,24 @@ export default async function BlogPostPage({
             <h1 className="title-display">{post.title}</h1>
             <p className="blog-post-lede">{post.description}</p>
             <div className="blog-post-byline">
-              <span>By <strong>{post.author}</strong></span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                By{" "}
+                {authorTipster ? (
+                  <Link href={`/tipsters/${authorTipster.slug}`} className="text-link">
+                    <strong>{post.author}</strong>
+                  </Link>
+                ) : (
+                  <strong>{post.author}</strong>
+                )}
+                {isTrustedAuthor ? (
+                  <span
+                    className="trusted-pill"
+                    title={`Lifetime ${authorTipster.winRate}% wins on ${authorTipster.totalTips} tips`}
+                  >
+                    ★ Trusted · {authorTipster.winRate}% · {authorTipster.totalTips} tips
+                  </span>
+                ) : null}
+              </span>
               <ShareButton path={`/blog/${post.slug}`} />
             </div>
           </header>

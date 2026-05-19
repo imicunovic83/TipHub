@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import SectionTitle from "@/components/SectionTitle";
 import LogoutButton from "@/components/LogoutButton";
+import AvatarPicker from "@/components/AvatarPicker";
+import AccountEditForm from "@/components/AccountEditForm";
 import { createSupabaseUserClient, getSupabaseUserFromToken, ACCESS_TOKEN_COOKIE } from "@/lib/supabase-server";
 
 export default async function ProfilePage() {
@@ -24,6 +26,10 @@ export default async function ProfilePage() {
     console.error("Failed to load profile:", error.message);
   }
 
+  const currentAvatar = profile?.avatar_url ?? user.user_metadata?.avatar_url ?? null;
+  const initialFullName = profile?.full_name ?? user.user_metadata?.full_name ?? "";
+  const initialFavoriteTipster = profile?.favorite_tipster ?? "";
+
   return (
     <section className="pad-section">
       <div className="container" style={{ maxWidth: 720 }}>
@@ -32,8 +38,8 @@ export default async function ProfilePage() {
         <div className="panel" style={{ marginTop: "1.5rem" }}>
           <div className="stack">
             <div className="row" style={{ gap: 16, alignItems: "center" }}>
-              {user.user_metadata?.avatar_url ? (
-                <img src={user.user_metadata.avatar_url} alt="avatar" style={{ width: 72, height: 72, borderRadius: 999 }} />
+              {currentAvatar ? (
+                <img src={currentAvatar} alt="avatar" style={{ width: 72, height: 72, borderRadius: 999 }} />
               ) : (
                 <div style={{ width: 72, height: 72, borderRadius: 999, background: "var(--pitch-100)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
                   {String(user.email)[0]}
@@ -93,6 +99,16 @@ export default async function ProfilePage() {
               </div>
             ) : null}
           </div>
+        </div>
+
+        <div className="surface" style={{ marginTop: "1.5rem" }}>
+          <h4 className="surface-title">Avatar</h4>
+          <AvatarPicker initialAvatarUrl={currentAvatar} email={user.email ?? ""} />
+        </div>
+
+        <div className="surface" style={{ marginTop: "1.5rem" }}>
+          <h4 className="surface-title">Account details</h4>
+          <AccountEditForm initial={{ fullName: initialFullName, favoriteTipster: initialFavoriteTipster }} />
         </div>
 
         <div className="surface" style={{ marginTop: "1.5rem" }}>
