@@ -46,9 +46,38 @@ export default async function ProfilePage() {
             </div>
 
             <div>
-              <h4 className="title-section">Profile data</h4>
+              <h4 className="title-section">Account details</h4>
               {profile ? (
-                <pre style={{ whiteSpace: "pre-wrap", margin: 0 }}>{JSON.stringify(profile, null, 2)}</pre>
+                <dl className="profile-detail-list">
+                  <div className="profile-detail-row">
+                    <dt>Full name</dt>
+                    <dd>{profile.full_name?.trim() || <span className="text-muted-sm">Not set</span>}</dd>
+                  </div>
+                  <div className="profile-detail-row">
+                    <dt>Email</dt>
+                    <dd>{profile.email ?? user.email}</dd>
+                  </div>
+                  <div className="profile-detail-row">
+                    <dt>Favorite tipster</dt>
+                    <dd>{profile.favorite_tipster?.trim() || <span className="text-muted-sm">None yet</span>}</dd>
+                  </div>
+                  <div className="profile-detail-row">
+                    <dt>Member since</dt>
+                    <dd>
+                      {profile.created_at
+                        ? new Date(profile.created_at).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })
+                        : "—"}
+                    </dd>
+                  </div>
+                  <div className="profile-detail-row">
+                    <dt>Role</dt>
+                    <dd>{user.user_metadata?.role ?? "member"}</dd>
+                  </div>
+                </dl>
               ) : (
                 <p className="text-muted-sm">Your Supabase profile row is not yet created.</p>
               )}

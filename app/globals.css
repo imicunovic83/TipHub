@@ -2955,6 +2955,78 @@ body {
   gap: 1.25rem;
 }
 
+/* Staging beta banner (only rendered when NEXT_PUBLIC_SITE_URL is *.vercel.app) */
+.staging-banner {
+  background: var(--gold-600, #d97706);
+  color: #fff;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.staging-banner-pill {
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+/* Profile detail list (rendered on /profile) */
+.profile-detail-list {
+  margin: 0;
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.profile-detail-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 30%) 1fr;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.profile-detail-row:last-child {
+  border-bottom: none;
+}
+
+.profile-detail-row dt {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  font-weight: 700;
+  align-self: center;
+}
+
+.profile-detail-row dd {
+  margin: 0;
+  color: var(--slate-900);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  .profile-detail-row {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
 /* Header auth profile link (avatar + first name pill) */
 .auth-profile-link {
   display: inline-flex;

@@ -139,6 +139,75 @@ lib/
 
 ---
 
+## Beta deploy on Vercel (before the real tiphub.rs launch)
+
+A staging deploy on Vercel lets the community kick the tires before the
+brand-domain launch. Once `NEXT_PUBLIC_SITE_URL` is set to anything
+ending in `.vercel.app`, the app automatically:
+
+- Switches `app/robots.ts` to a global `Disallow: /` (no Google indexing
+  of the staging URL — avoids competing with the eventual tiphub.rs).
+- Adds `noindex, nofollow` to the root metadata.
+- Prefixes the document title with `[Beta]`.
+- Shows a gold "BETA" banner above the header explaining this is a beta.
+
+### One-time setup
+
+1. **Create the project on Vercel** — `vercel link` from the repo root,
+   pick the team/account, accept defaults. Vercel will give you a
+   hostname like `tiphub-xxx.vercel.app`.
+
+2. **Add environment variables** in Vercel Dashboard → Project →
+   Settings → Environment Variables (set "Production", "Preview", and
+   "Development" together unless noted):
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+   SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+   RESEND_API_KEY=re_...
+   NEXT_PUBLIC_SITE_URL=https://tiphub-xxx.vercel.app
+   ```
+   (No `DATABASE_URL` needed in Vercel — the app uses the Supabase REST
+   client, not psql.)
+
+3. **Whitelist the Vercel hostname in Supabase Auth** —
+   Dashboard → Authentication → URL Configuration → Redirect URLs:
+   ```
+   https://tiphub-xxx.vercel.app/reset-password
+   https://tiphub-xxx.vercel.app/auth/callback
+   ```
+   Without this, password reset and OAuth callbacks fall back to the
+   localhost URL and break for beta testers.
+
+4. **Resend domain (optional but recommended for beta with real users)**
+   — by default Resend's sandbox sender `onboarding@resend.dev` only
+   delivers to addresses that own your Resend account. Beta testers
+   signing up with their own emails will hit a 422 from Resend. Either:
+   - Verify a domain you control on Resend (DNS records under
+     Domains → Add Domain) and set `EMAIL_FROM=TipHub <noreply@<that-domain>>`
+     in Vercel env. This unlocks delivery to any recipient.
+   - Or note the limitation in the beta announcement and keep emails
+     sandboxed.
+
+5. **Deploy** — `git push` (Vercel auto-deploys on main) or
+   `vercel deploy --prod`. Smoke-test:
+   - Open the Vercel URL → BETA banner visible, `[Beta]` in tab title.
+   - `curl https://tiphub-xxx.vercel.app/robots.txt` → returns
+     `User-agent: * Disallow: /`.
+   - Subscribe to the newsletter from the footer → check inbox (only
+     works if step 4 done OR you used your Resend-account email).
+   - Register a test account, apply as tipster, approve from admin.
+
+### Flipping to production (tiphub.rs)
+
+When ready for the real launch, change `NEXT_PUBLIC_SITE_URL` in Vercel
+to `https://tiphub.rs`, add the same Supabase redirect URLs for the
+new host, point the apex/A record at Vercel, and redeploy. The staging
+host stops being indexed automatically (robots stays Disallow), so
+swap to a custom Vercel domain only after the migration is settled.
+
+---
+
 ## Build
 
 ```bash

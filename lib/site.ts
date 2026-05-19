@@ -15,6 +15,15 @@ export function siteUrl(): string {
   return raw.replace(/\/+$/, "");
 }
 
+// True on Vercel preview/production URLs (`*.vercel.app`) — we treat those as
+// a staging environment so search engines don't index it as a duplicate of
+// the eventual tiphub.rs production site. Production flips this to false by
+// setting NEXT_PUBLIC_SITE_URL to https://tiphub.rs.
+export function isStagingHost(): boolean {
+  const url = siteUrl();
+  return url.includes(".vercel.app");
+}
+
 export function absoluteUrl(path: string): string {
   const p = path.startsWith("/") ? path : `/${path}`;
   return `${siteUrl()}${p}`;

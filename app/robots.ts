@@ -1,7 +1,15 @@
 import type { MetadataRoute } from "next";
-import { siteUrl } from "@/lib/site";
+import { isStagingHost, siteUrl } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
+  // Staging (any *.vercel.app host) blocks everything so beta content
+  // doesn't get indexed as a duplicate of the eventual tiphub.rs site.
+  if (isStagingHost()) {
+    return {
+      rules: { userAgent: "*", disallow: "/" },
+    };
+  }
+
   return {
     rules: {
       userAgent: "*",
