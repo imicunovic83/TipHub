@@ -27,7 +27,6 @@ export default async function ProfilePage() {
   }
 
   const currentAvatar = profile?.avatar_url ?? user.user_metadata?.avatar_url ?? null;
-  const initialFullName = profile?.full_name ?? user.user_metadata?.full_name ?? "";
   const initialFavoriteTipster = profile?.favorite_tipster ?? "";
 
   return (
@@ -108,7 +107,7 @@ export default async function ProfilePage() {
 
         <div className="surface" style={{ marginTop: "1.5rem" }}>
           <h4 className="surface-title">Account details</h4>
-          <AccountEditForm initial={{ fullName: initialFullName, favoriteTipster: initialFavoriteTipster }} />
+          <AccountEditForm initial={{ favoriteTipster: initialFavoriteTipster }} />
         </div>
 
         <div className="surface" style={{ marginTop: "1.5rem" }}>

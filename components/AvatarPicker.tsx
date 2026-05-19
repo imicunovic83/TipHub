@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { getSupabaseClient } from "@/lib/supabase";
 
 // 12 curated DiceBear presets covering 4 styles. Order chosen so the grid
 // reads "people / minimalist / robots / abstract" left-to-right, top-to-bottom.
@@ -41,6 +43,7 @@ export default function AvatarPicker({
 }) {
   const [current, setCurrent] = useState<string | null>(initialAvatarUrl ?? null);
   const [state, setState] = useState<State>({ kind: "idle" });
+  const router = useRouter();
 
   async function save(target: string | null) {
     if (state.kind === "saving") return;
@@ -61,6 +64,19 @@ export default function AvatarPicker({
         kind: "ok",
         message: target ? "Avatar updated." : "Avatar reset to default.",
       });
+
+      // Service-role write updated user_metadata server-side, but the JWT in
+      // the user's cookies still holds the old snapshot. Force a refresh so a
+      // new JWT is minted with the latest metadata — AuthControls listens to
+      // onAuthStateChange("TOKEN_REFRESHED") and re-renders the header avatar
+      // automatically. Also refresh server components so /profile reflects
+      // immediately on the next navigation.
+      try {
+        await getSupabaseClient().auth.refreshSession();
+      } catch (refreshErr) {
+        console.warn("[avatar] session refresh failed:", refreshErr);
+      }
+      router.refresh();
     } catch {
       setState({ kind: "err", message: "Network error. Please try again." });
     }

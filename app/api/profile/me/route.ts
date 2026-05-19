@@ -5,7 +5,6 @@ import {
   getSupabaseUserFromToken,
 } from "@/lib/supabase-server";
 
-const MAX_NAME = 80;
 const MAX_FAV = 80;
 
 export async function POST(request: Request) {
@@ -21,24 +20,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const fullName = typeof body.full_name === "string" ? body.full_name.trim() : "";
   const favoriteTipster = typeof body.favorite_tipster === "string" ? body.favorite_tipster.trim() : "";
 
-  if (fullName.length > MAX_NAME) {
-    return NextResponse.json({ error: `Name must be ${MAX_NAME} characters or fewer.` }, { status: 400 });
-  }
   if (favoriteTipster.length > MAX_FAV) {
     return NextResponse.json({ error: `Favorite tipster must be ${MAX_FAV} characters or fewer.` }, { status: 400 });
   }
 
   // User-scoped client — RLS only lets a user touch their own profiles row.
+  // Full name is intentionally NOT editable here (account-identity field;
+  // change requires manual support review during beta).
   const supabase = createSupabaseUserClient(token);
   const { data, error } = await supabase
     .from("profiles")
-    .update({
-      full_name: fullName || null,
-      favorite_tipster: favoriteTipster || null,
-    })
+    .update({ favorite_tipster: favoriteTipster || null })
     .eq("id", user.id)
     .select()
     .single();

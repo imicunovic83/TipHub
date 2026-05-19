@@ -11,9 +11,8 @@ type State =
 export default function AccountEditForm({
   initial,
 }: {
-  initial: { fullName: string; favoriteTipster: string };
+  initial: { favoriteTipster: string };
 }) {
-  const [fullName, setFullName] = useState(initial.fullName);
   const [favoriteTipster, setFavoriteTipster] = useState(initial.favoriteTipster);
   const [state, setState] = useState<State>({ kind: "idle" });
 
@@ -25,17 +24,14 @@ export default function AccountEditForm({
       const res = await fetch("/api/profile/me", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          full_name: fullName,
-          favorite_tipster: favoriteTipster,
-        }),
+        body: JSON.stringify({ favorite_tipster: favoriteTipster }),
       });
       const data = await res.json();
       if (!res.ok) {
         setState({ kind: "err", message: data.error ?? "Could not save." });
         return;
       }
-      setState({ kind: "ok", message: "Account details saved." });
+      setState({ kind: "ok", message: "Saved." });
     } catch {
       setState({ kind: "err", message: "Network error. Please try again." });
     }
@@ -43,20 +39,6 @@ export default function AccountEditForm({
 
   return (
     <form className="stack" onSubmit={onSubmit}>
-      <div className="stack-sm">
-        <label htmlFor="acct-name" className="form-label">Full name</label>
-        <input
-          id="acct-name"
-          type="text"
-          className="input"
-          value={fullName}
-          maxLength={80}
-          onChange={(e) => setFullName(e.target.value)}
-          placeholder="How you'd like to appear"
-          disabled={state.kind === "saving"}
-        />
-      </div>
-
       <div className="stack-sm">
         <label htmlFor="acct-fav" className="form-label">Favorite tipster</label>
         <input
@@ -69,17 +51,20 @@ export default function AccountEditForm({
           placeholder="Optional — display only, doesn't affect stats"
           disabled={state.kind === "saving"}
         />
+        <p className="text-muted-sm" style={{ margin: 0 }}>
+          Optional. Shown only on your profile.
+        </p>
       </div>
 
       <p className="text-muted-sm" style={{ margin: 0 }}>
-        Need to change your email? Drop a line at{" "}
+        Need to change your name or email? Drop a line at{" "}
         <a href="mailto:hello@tiphub.rs" className="text-link">hello@tiphub.rs</a>{" "}
-        — email changes go through manual review during beta.
+        — those changes go through manual review during beta.
       </p>
 
       <div className="row" style={{ gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
         <button type="submit" className="btn btn-primary" disabled={state.kind === "saving"}>
-          {state.kind === "saving" ? "Saving…" : "Save changes"}
+          {state.kind === "saving" ? "Saving…" : "Save"}
         </button>
         {state.kind === "ok" ? (
           <span className="form-msg form-msg--ok" role="status">{state.message}</span>
