@@ -258,23 +258,125 @@ svg {
 .site-footer {
   border-top: 1px solid var(--border);
   background: var(--slate-50);
-  padding: 1.5rem 0;
+  padding: 2.5rem 0 1.5rem;
   margin-top: 3rem;
 }
 
 .site-footer-inner {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 2rem;
   font-size: 0.85rem;
   color: var(--slate-500);
 }
 
+.site-footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 1fr));
+  gap: 2.5rem;
+}
+
+@media (max-width: 720px) {
+  .site-footer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+}
+
+.site-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.site-footer-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--slate-700);
+}
+
+.site-footer-blurb {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--slate-500);
+  line-height: 1.5;
+  max-width: 36ch;
+}
+
+.site-footer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.site-footer-nav a {
+  font-size: 0.875rem;
+  color: var(--slate-600);
+  transition: color 0.15s ease;
+}
+
+.site-footer-nav a:hover {
+  color: var(--pitch-700);
+}
+
+.site-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.site-footer-copy {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--slate-500);
+}
+
 .site-footer-disclaimer {
+  margin: 0;
   font-size: 0.75rem;
-  color: var(--slate-400);
+  color: var(--slate-500);
+}
+
+/* Newsletter signup */
+.newsletter-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.newsletter-form-input {
+  min-width: 0;
+}
+
+.newsletter-form-btn {
+  white-space: nowrap;
+}
+
+.newsletter-form-msg {
+  grid-column: 1 / -1;
+  margin: 0.25rem 0 0;
+  padding: 0.4rem 0.625rem;
+  font-size: 0.78rem;
+  border-radius: var(--radius-sm);
+}
+
+.newsletter-form-msg--ok {
+  background: var(--pitch-100, #d1fae5);
+  color: var(--pitch-800, #065f46);
+}
+
+.newsletter-form-msg--err {
+  background: var(--rose-100, #ffe4e6);
+  color: var(--rose-700, #be123c);
 }
 
 /* Hero */

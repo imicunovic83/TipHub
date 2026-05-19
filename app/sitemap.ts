@@ -13,9 +13,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/tipsters`,    lastModified: now, changeFrequency: "daily",   priority: 0.9 },
     { url: `${base}/bookmakers`,  lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
     { url: `${base}/competition`, lastModified: now, changeFrequency: "daily",   priority: 0.7 },
-    { url: `${base}/blog`,        lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
-    { url: `${base}/about`,       lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${base}/contact`,     lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${base}/blog`,                  lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
+    { url: `${base}/about`,                 lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${base}/contact`,               lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${base}/privacy`,               lastModified: now, changeFrequency: "yearly",  priority: 0.3 },
+    { url: `${base}/terms`,                 lastModified: now, changeFrequency: "yearly",  priority: 0.3 },
+    { url: `${base}/responsible-gambling`,  lastModified: now, changeFrequency: "yearly",  priority: 0.4 },
   ];
 
   const postRoutes: MetadataRoute.Sitemap = getAllPosts().map((post) => ({

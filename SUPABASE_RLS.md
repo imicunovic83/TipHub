@@ -125,6 +125,30 @@ create index on public.analytics_events (ts desc);
 create index on public.analytics_events (name);
 ```
 
+## 3b. `newsletter_subscribers` — double-opt-in mailing list
+
+Server-only access via the service role. Email is unique
+(case-insensitive). One opaque `token` covers both confirm and
+unsubscribe — the action is determined by the URL path. Regenerated
+whenever a row resubscribes after unsubscribing.
+
+```sql
+create extension if not exists citext;
+
+create table public.newsletter_subscribers (
+  id text primary key default ('n-' || encode(gen_random_bytes(8), 'hex')),
+  email citext not null unique,
+  status text not null default 'pending' check (status in ('pending','confirmed','unsubscribed')),
+  token uuid not null default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  confirmed_at timestamptz,
+  unsubscribed_at timestamptz
+);
+alter table public.newsletter_subscribers enable row level security;
+create index on public.newsletter_subscribers (status);
+create index on public.newsletter_subscribers (token);
+```
+
 ## 3a. Realtime leaderboard
 
 The community competition leaderboard (`/competition`) subscribes to

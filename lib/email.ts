@@ -88,6 +88,56 @@ export async function sendApplicationApprovedEmail(opts: {
   await send(opts.to, "Your TipHub tipster application is approved", shell("You’re in", body));
 }
 
+export async function sendNewsletterConfirmation(opts: {
+  to: string;
+  token: string;
+}): Promise<void> {
+  const confirmUrl = `${siteUrl()}/api/newsletter/confirm?token=${encodeURIComponent(opts.token)}`;
+  const unsubUrl = `${siteUrl()}/api/newsletter/unsubscribe?token=${encodeURIComponent(opts.token)}`;
+  const body = `<p style="margin:0 0 16px;line-height:1.5;font-size:15px;color:#334155;">
+              Thanks for signing up for the TipHub newsletter. Click the
+              button below to confirm your email address &mdash; we won&apos;t
+              send anything until you do.
+            </p>
+            <p style="text-align:center;margin:32px 0;">
+              <a href="${confirmUrl}"
+                 style="display:inline-block;padding:14px 28px;background:#047857;color:#ffffff;
+                        text-decoration:none;border-radius:8px;font-weight:700;font-size:15px;">
+                Confirm subscription
+              </a>
+            </p>
+            <p style="margin:0 0 16px;font-size:13px;color:#64748b;line-height:1.5;">
+              If the button doesn&apos;t work, copy and paste this link into your browser:<br>
+              <span style="color:#475569;word-break:break-all;">${confirmUrl}</span>
+            </p>
+            <p style="margin:24px 0 0;font-size:12px;color:#94a3b8;line-height:1.5;">
+              Didn&apos;t sign up? You can ignore this email, or
+              <a href="${unsubUrl}" style="color:#94a3b8;">remove your address from our list</a>.
+            </p>`;
+  await send(opts.to, "Confirm your TipHub newsletter subscription", shell("One more step", body));
+}
+
+export async function sendNewsletterWelcome(opts: { to: string; token: string }): Promise<void> {
+  const blogUrl = `${siteUrl()}/blog`;
+  const unsubUrl = `${siteUrl()}/api/newsletter/unsubscribe?token=${encodeURIComponent(opts.token)}`;
+  const body = `<p style="margin:0 0 16px;line-height:1.5;font-size:15px;color:#334155;">
+              You&apos;re in. We&apos;ll send you a short weekly digest of the most
+              interesting tips, match previews, and tipster news &mdash; never
+              more than once a week.
+            </p>
+            <p style="text-align:center;margin:32px 0;">
+              <a href="${blogUrl}"
+                 style="display:inline-block;padding:14px 28px;background:#047857;color:#ffffff;
+                        text-decoration:none;border-radius:8px;font-weight:700;font-size:15px;">
+                Read the latest from the blog
+              </a>
+            </p>
+            <p style="margin:24px 0 0;font-size:12px;color:#94a3b8;line-height:1.5;">
+              Change your mind? You can <a href="${unsubUrl}" style="color:#94a3b8;">unsubscribe at any time</a>.
+            </p>`;
+  await send(opts.to, "Welcome to the TipHub newsletter", shell("You're confirmed", body));
+}
+
 export async function sendApplicationRejectedEmail(opts: {
   to: string;
   name: string;
