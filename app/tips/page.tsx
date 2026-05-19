@@ -37,7 +37,7 @@ export default async function TipsPage() {
             <div className="demo-banner" role="note">
               <strong>Sample tips</strong> are shown to demonstrate the catalog. They&apos;ll be
               replaced automatically as real tipsters publish their own picks.
-              <Link href="/about" className="text-link" style={{ marginLeft: "0.4rem" }}>Apply to become a tipster →</Link>
+              <Link href="/tipster/apply" className="text-link" style={{ marginLeft: "0.4rem" }}>Apply to become a tipster →</Link>
             </div>
           ) : null}
           <Suspense fallback={<div>Loading tips…</div>}>

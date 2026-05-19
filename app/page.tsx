@@ -37,7 +37,7 @@ export default async function Home() {
             <p className="hero-lede">
               Every tip our community posts stays on public record — wins, misses and ROI alike.
               No VIP groups, no deleted losses, no paywalls. Compare prices across Mozzart, Maxbet,
-              Soccerbet, Meridian and Admiral on every pick, and follow the tipsters who actually deliver.
+              Soccerbet, Meridian and AdmiralBet on every pick, and follow the tipsters who actually deliver.
             </p>
             <div className="hero-actions">
               <Link href="/tips" className="btn btn-gold">Browse tips →</Link>
@@ -150,10 +150,6 @@ export default async function Home() {
                   </Link>
                 </article>
               ))}
-            </div>
-
-            <div>
-              <Link href="/blog" className="btn btn-primary">Read the blog →</Link>
             </div>
           </div>
         </section>

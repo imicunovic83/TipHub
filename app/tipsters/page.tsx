@@ -28,7 +28,7 @@ export default async function TipstersPage() {
             <div className="demo-banner" role="note">
               <strong>Sample profiles</strong> are shown to demonstrate how tipster pages work.
               They&apos;ll be replaced automatically as real tipsters join.
-              <Link href="/about" className="text-link" style={{ marginLeft: "0.4rem" }}>Apply to become a tipster →</Link>
+              <Link href="/tipster/apply" className="text-link" style={{ marginLeft: "0.4rem" }}>Apply to become a tipster →</Link>
             </div>
           ) : null}
           <div className="grid-cards">

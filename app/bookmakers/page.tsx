@@ -8,7 +8,7 @@ import TipCard from "@/components/TipCard";
 export const metadata: Metadata = {
   title: "Bookmakers — odds comparison",
   description:
-    "Mozzart, Maxbet, Soccerbet, Meridian and Admiral compared on every tip in our catalog. See which operator offers the best odds most often, and find tips where each one stands out.",
+    "Mozzart, Maxbet, Soccerbet, Meridian and AdmiralBet compared on every tip in our catalog. See which operator offers the best odds most often, and find tips where each one stands out.",
   alternates: { canonical: "/bookmakers" },
 };
 

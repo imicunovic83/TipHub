@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "Maxbet",
     "Soccerbet",
     "Meridian",
-    "Admiral",
+    "AdmiralBet",
     "tipster track record",
   ],
   authors: [{ name: SITE_NAME }],

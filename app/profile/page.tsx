@@ -5,6 +5,7 @@ import SectionTitle from "@/components/SectionTitle";
 import LogoutButton from "@/components/LogoutButton";
 import AvatarPicker from "@/components/AvatarPicker";
 import AccountEditForm from "@/components/AccountEditForm";
+import ChangePasswordForm from "@/components/ChangePasswordForm";
 import { createSupabaseUserClient, getSupabaseUserFromToken, ACCESS_TOKEN_COOKIE } from "@/lib/supabase-server";
 
 export default async function ProfilePage() {
@@ -108,6 +109,14 @@ export default async function ProfilePage() {
         <div className="surface" style={{ marginTop: "1.5rem" }}>
           <h4 className="surface-title">Account details</h4>
           <AccountEditForm initial={{ favoriteTipster: initialFavoriteTipster }} />
+        </div>
+
+        <div className="surface" style={{ marginTop: "1.5rem" }}>
+          <h4 className="surface-title">Change password</h4>
+          <p className="text-muted-sm" style={{ margin: "0 0 0.75rem" }}>
+            Updates your sign-in password. You stay signed in on this device after the change.
+          </p>
+          <ChangePasswordForm />
         </div>
 
         <div className="surface" style={{ marginTop: "1.5rem" }}>

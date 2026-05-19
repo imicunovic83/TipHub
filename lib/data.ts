@@ -100,7 +100,7 @@ export const bookmakers: Bookmaker[] = [
   { slug: "maxbet",    name: "Maxbet",      shortCode: "MX", brandColor: "#0a5d2a", logoSrc: "/bookmakers/maxbet.svg",    country: "Serbia" },
   { slug: "soccerbet", name: "Soccerbet",   shortCode: "SB", brandColor: "#065f46", logoSrc: "/bookmakers/soccerbet.png", country: "Serbia" },
   { slug: "meridian",  name: "Meridianbet", shortCode: "ME", brandColor: "#fde047", logoSrc: "/bookmakers/meridian.svg",  country: "Serbia" },
-  { slug: "admiral",   name: "Admiral Bet", shortCode: "AD", brandColor: "#1e3a8a", logoSrc: "/bookmakers/admiral.png",   country: "Serbia" },
+  { slug: "admiral",   name: "AdmiralBet",  shortCode: "AD", brandColor: "#1e3a8a", logoSrc: "/bookmakers/admiral.png",   country: "Serbia" },
 ];
 
 // ---------------------------------------------------------------------------

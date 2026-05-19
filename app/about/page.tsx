@@ -44,7 +44,7 @@ export default function AboutPage() {
             </li>
             <li>
               <strong>Best-odds first.</strong> Every tip shows the offered price across five
-              Serbian bookmakers (Mozzart, Maxbet, Soccerbet, Meridian, Admiral) so you never bet
+              Serbian bookmakers (Mozzart, Maxbet, Soccerbet, Meridian, AdmiralBet) so you never bet
               1.90 when somebody else has 2.05 on the same selection.
             </li>
             <li>
