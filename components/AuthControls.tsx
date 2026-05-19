@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getSupabaseClient } from "@/lib/supabase";
-import { trackEvent } from "@/lib/analytics";
 
 // Minimal MD5 implementation (adapted for small client-side use)
 function md5(str: string) {
@@ -177,10 +175,8 @@ function md5(str: string) {
 
 
 export default function AuthControls() {
-  const router = useRouter();
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -238,26 +234,6 @@ export default function AuthControls() {
     };
   }, []);
 
-  async function handleLogout() {
-    try {
-      const supabase = getSupabaseClient();
-      await supabase.auth.signOut();
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      setUser(null);
-      setMsg("Logged out");
-      trackEvent('logout', { user: user?.email });
-      setTimeout(() => setMsg(null), 2500);
-      router.push("/login");
-    } catch (e) {
-      setMsg("Logout failed");
-      trackEvent('logout_failed', { error: String(e) });
-      setTimeout(() => setMsg(null), 2500);
-    }
-  }
-
   if (loading) return <div className="auth-controls">…</div>;
 
   if (!user) {
@@ -280,44 +256,22 @@ export default function AuthControls() {
 
   return (
     <div className="auth-controls row" style={{ alignItems: "center" }}>
-      <img
-        src={avatar ?? gravatar ?? unavatar ?? fallbackAvatar}
-        alt={name}
-        style={{ width: 32, height: 32, borderRadius: 999, objectFit: "cover", marginRight: 8 }}
-      />
-
-      <span className="text-muted-sm" style={{ marginRight: "0.5rem" }}>{String(name).split(" ")[0]}</span>
-      {(user.user_metadata?.role === "tipster" || user.user_metadata?.role === "admin") ? (
-        <Link href="/tipster/dashboard" className="btn btn-link" style={{ marginRight: "0.5rem" }}>My tips</Link>
-      ) : null}
-      {user.user_metadata?.role === "admin" ? <Link href="/admin" className="btn btn-primary" style={{ marginRight: "0.5rem" }}>Admin</Link> : null}
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="btn btn-logout"
-        aria-label="Log out"
-        title="Log out"
+      <Link
+        href="/profile"
+        className="auth-profile-link"
+        title="Go to your profile"
       >
-        <svg
-          className="btn-logout-icon"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-          <polyline points="16 17 21 12 16 7" />
-          <line x1="21" y1="12" x2="9" y2="12" />
-        </svg>
-        <span>Log out</span>
-      </button>
-
-      {msg ? <div className="badge badge--pitch" style={{ marginLeft: 8 }}>{msg}</div> : null}
+        <img
+          src={avatar ?? gravatar ?? unavatar ?? fallbackAvatar}
+          alt={name}
+          style={{ width: 32, height: 32, borderRadius: 999, objectFit: "cover", marginRight: 8 }}
+        />
+        <span className="text-muted-sm">{String(name).split(" ")[0]}</span>
+      </Link>
+      {(user.user_metadata?.role === "tipster" || user.user_metadata?.role === "admin") ? (
+        <Link href="/tipster/dashboard" className="btn btn-link" style={{ marginLeft: "0.5rem" }}>My tips</Link>
+      ) : null}
+      {user.user_metadata?.role === "admin" ? <Link href="/admin" className="btn btn-primary" style={{ marginLeft: "0.5rem" }}>Admin</Link> : null}
     </div>
   );
 }

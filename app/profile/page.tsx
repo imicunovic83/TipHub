@@ -1,6 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import SectionTitle from "@/components/SectionTitle";
+import LogoutButton from "@/components/LogoutButton";
 import { createSupabaseUserClient, getSupabaseUserFromToken, ACCESS_TOKEN_COOKIE } from "@/lib/supabase-server";
 
 export default async function ProfilePage() {
@@ -51,7 +53,25 @@ export default async function ProfilePage() {
                 <p className="text-muted-sm">Your Supabase profile row is not yet created.</p>
               )}
             </div>
+
+            {(user.user_metadata?.role === "tipster" || user.user_metadata?.role === "admin") ? (
+              <div>
+                <h4 className="title-section">Tipster tools</h4>
+                <div className="row" style={{ gap: "0.75rem", flexWrap: "wrap" }}>
+                  <Link href="/tipster/dashboard" className="btn btn-primary">Open dashboard</Link>
+                  <Link href="/tipster/profile" className="btn btn-ghost">Edit public profile</Link>
+                </div>
+              </div>
+            ) : null}
           </div>
+        </div>
+
+        <div className="surface" style={{ marginTop: "1.5rem" }}>
+          <h4 className="surface-title">Sign out</h4>
+          <p className="text-muted-sm" style={{ margin: "0 0 0.75rem" }}>
+            Ends this session on this device. You can sign back in from the login page anytime.
+          </p>
+          <LogoutButton />
         </div>
       </div>
     </section>

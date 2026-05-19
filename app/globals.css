@@ -2955,6 +2955,21 @@ body {
   gap: 1.25rem;
 }
 
+/* Header auth profile link (avatar + first name pill) */
+.auth-profile-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem 0.2rem 0.2rem;
+  border-radius: 999px;
+  transition: background 0.15s ease;
+}
+
+.auth-profile-link:hover,
+.auth-profile-link:focus-visible {
+  background: var(--slate-100);
+  outline: none;
+}
+
 /* Generic form helpers (used by profile editor + others) */
 .form-label {
   display: block;
