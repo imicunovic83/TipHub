@@ -63,11 +63,13 @@ export default function LoginForm({ nextPath: nextPathProp }: { nextPath?: strin
         </label>
         <input
           id="login-email"
+          name="email"
           type="email"
           className="input"
           value={form.email}
           onChange={(event) => setForm({ ...form, email: event.target.value })}
           required
+          autoComplete="username"
           placeholder="you@example.com"
         />
       </div>
@@ -78,11 +80,13 @@ export default function LoginForm({ nextPath: nextPathProp }: { nextPath?: strin
         </label>
         <input
           id="login-password"
+          name="password"
           type="password"
           className="input"
           value={form.password}
           onChange={(event) => setForm({ ...form, password: event.target.value })}
           required
+          autoComplete="current-password"
           placeholder="Enter your password"
         />
       </div>

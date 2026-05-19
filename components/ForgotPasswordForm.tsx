@@ -44,12 +44,14 @@ export default function ForgotPasswordForm() {
         </label>
         <input
           id="forgot-password-email"
+          name="email"
           type="email"
           className="input"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="you@example.com"
           required
+          autoComplete="username"
         />
       </div>
 

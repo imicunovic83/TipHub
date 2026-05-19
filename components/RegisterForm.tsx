@@ -131,6 +131,7 @@ export default function RegisterForm() {
             onChange={(event) => setForm({ ...form, firstName: event.target.value })}
             placeholder="Ana"
             required
+            autoComplete="given-name"
           />
         </div>
         <div style={{ flex: "1 1 240px" }}>
@@ -146,6 +147,7 @@ export default function RegisterForm() {
             onChange={(event) => setForm({ ...form, lastName: event.target.value })}
             placeholder="Petrović"
             required
+            autoComplete="family-name"
           />
         </div>
       </div>
@@ -163,6 +165,7 @@ export default function RegisterForm() {
           onChange={(event) => setForm({ ...form, email: event.target.value })}
           placeholder="you@example.com"
           required
+          autoComplete="username"
         />
       </div>
 
@@ -181,6 +184,7 @@ export default function RegisterForm() {
             placeholder="Enter a secure password"
             required
             minLength={8}
+            autoComplete="new-password"
           />
         </div>
         <div style={{ flex: "1 1 240px" }}>
@@ -197,6 +201,7 @@ export default function RegisterForm() {
             placeholder="Repeat your password"
             required
             minLength={8}
+            autoComplete="new-password"
           />
         </div>
       </div>
