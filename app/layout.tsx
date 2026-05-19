@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BetSlip from "@/components/BetSlip";
+import CookieConsent from "@/components/CookieConsent";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -61,6 +62,7 @@ export default function RootLayout({
         <main className="layout-main">{children}</main>
         <Footer />
         <BetSlip />
+        <CookieConsent />
       </body>
     </html>
   );

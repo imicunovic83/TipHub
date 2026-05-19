@@ -130,3 +130,32 @@ export async function ensureTipsterProfile(input: {
   }
   throw new Error("Could not allocate a unique tipster slug after 50 attempts.");
 }
+
+export interface UpdateTipsterProfileInput {
+  userId: string;
+  name: string;
+  specialty: string;
+  shortBio: string;
+  longBio: string;
+}
+
+export async function updateTipsterProfile(
+  input: UpdateTipsterProfileInput,
+): Promise<TipsterProfile> {
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("tipster_profiles")
+    .update({
+      name: input.name.trim(),
+      specialty: input.specialty.trim(),
+      short_bio: input.shortBio.trim(),
+      long_bio: input.longBio.trim(),
+    })
+    .eq("user_id", input.userId)
+    .select()
+    .single();
+  if (error || !data) {
+    throw new Error(`Update tipster profile failed: ${error?.message ?? "no row"}`);
+  }
+  return rowToProfile(data as Row);
+}

@@ -90,10 +90,13 @@ export default async function TipsterDashboardPage() {
             </div>
           </div>
           {profile ? (
-            <p className="text-muted-sm" style={{ marginTop: "1rem", marginBottom: 0 }}>
-              Your public profile lives at{" "}
-              <Link href={`/tipsters/${profile.slug}`}>/tipsters/{profile.slug}</Link>.
-            </p>
+            <div className="row" style={{ marginTop: "1rem", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+              <p className="text-muted-sm" style={{ margin: 0 }}>
+                Your public profile lives at{" "}
+                <Link href={`/tipsters/${profile.slug}`}>/tipsters/{profile.slug}</Link>.
+              </p>
+              <Link href="/tipster/profile" className="btn btn-ghost">Edit profile</Link>
+            </div>
           ) : null}
         </div>
 

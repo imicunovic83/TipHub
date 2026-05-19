@@ -1,6 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = Number(process.env.PORT ?? 3100);
+// Default to port 3000 so we reuse the user's already-running dev server (Next
+// 16's per-directory lock prevents a second `next dev` from starting). On CI
+// nothing is on 3000, so the webServer block below boots a fresh instance.
+const PORT = Number(process.env.PORT ?? 3000);
 const BASE_URL = `http://localhost:${PORT}`;
 
 export default defineConfig({
