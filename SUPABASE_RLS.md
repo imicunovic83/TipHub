@@ -39,6 +39,20 @@ run this once in the SQL Editor:
 alter table public.profiles add column if not exists avatar_url text;
 ```
 
+### Migration: linking competition_users to auth.users
+
+If your project predates the auth-required competition flow (added 2026-05-19),
+run this once:
+
+```sql
+alter table public.competition_users
+  add column if not exists auth_user_id uuid references auth.users(id) on delete cascade;
+
+create unique index if not exists competition_users_auth_user_id_idx
+  on public.competition_users (auth_user_id)
+  where auth_user_id is not null;
+```
+
 ## 2. Auto-create profile row on signup
 
 Email confirmation is on by default in Supabase, which means `signUp`
@@ -102,9 +116,13 @@ create table public.competition_users (
   id text primary key default ('u-' || encode(gen_random_bytes(6), 'hex')),
   name text not null,
   email text not null unique,
+  auth_user_id uuid references auth.users(id) on delete cascade,
   joined_at timestamptz not null default now()
 );
 alter table public.competition_users enable row level security;
+create unique index competition_users_auth_user_id_idx
+  on public.competition_users (auth_user_id)
+  where auth_user_id is not null;
 
 create table public.competition_submissions (
   id text primary key default ('s-' || encode(gen_random_bytes(6), 'hex')),

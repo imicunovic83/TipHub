@@ -2,9 +2,13 @@ import { NextResponse } from "next/server";
 import {
   addCompetitionSubmission,
   buildLeaderboard,
-  createOrFindCompetitionUser,
+  findOrCreateCompetitionUserForAuth,
   getAllSubmissions,
 } from "@/lib/competition";
+import {
+  getAccessTokenFromRequest,
+  getSupabaseUserFromToken,
+} from "@/lib/supabase-server";
 
 export async function GET() {
   const [leaderboard, submissions] = await Promise.all([buildLeaderboard(), getAllSubmissions()]);
@@ -12,10 +16,17 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const token = getAccessTokenFromRequest(request);
+  if (!token) {
+    return NextResponse.json({ error: "Log in to submit a community pick." }, { status: 401 });
+  }
+  const user = await getSupabaseUserFromToken(token);
+  if (!user || !user.email) {
+    return NextResponse.json({ error: "Log in to submit a community pick." }, { status: 401 });
+  }
+
   const body = await request.json();
-  const { name, email, matchId, market, prediction, odds, stake } = body as {
-    name?: string;
-    email?: string;
+  const { matchId, market, prediction, odds, stake } = body as {
     matchId?: string;
     market?: string;
     prediction?: string;
@@ -23,7 +34,7 @@ export async function POST(request: Request) {
     stake?: number;
   };
 
-  if (!name?.trim() || !email?.trim() || !matchId?.trim() || !market?.trim() || !prediction?.trim()) {
+  if (!matchId?.trim() || !market?.trim() || !prediction?.trim()) {
     return NextResponse.json({ error: "Please complete all required fields." }, { status: 400 });
   }
   if (typeof odds !== "number" || odds <= 1) {
@@ -33,9 +44,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Stake must be a positive number." }, { status: 400 });
   }
 
-  const user = await createOrFindCompetitionUser(name, email);
+  const displayName =
+    (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
+    user.email.split("@")[0];
+
+  const competitionUser = await findOrCreateCompetitionUserForAuth({
+    authUserId: user.id,
+    name: displayName,
+    email: user.email,
+  });
+
   const submission = await addCompetitionSubmission({
-    userId: user.id,
+    userId: competitionUser.id,
     matchId,
     market,
     prediction,

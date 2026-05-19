@@ -153,6 +153,69 @@ export async function getPendingSubmissions(): Promise<CompetitionSubmission[]> 
   return (data as SubmissionRow[]).map(rowToSubmission);
 }
 
+// Auth-gated submission entry point. Lookup order is (1) auth_user_id, then
+// (2) email — so an account that previously submitted free-form under the
+// same email gets adopted on first auth-gated submit. Falls back to creating
+// a fresh row if neither match.
+export async function findOrCreateCompetitionUserForAuth(input: {
+  authUserId: string;
+  name: string;
+  email: string;
+}): Promise<CompetitionUser> {
+  const supabase = getSupabaseServerClient();
+  const normalizedEmail = input.email.trim().toLowerCase();
+  const trimmedName = input.name.trim();
+
+  const byAuth = await supabase
+    .from("competition_users")
+    .select()
+    .eq("auth_user_id", input.authUserId)
+    .maybeSingle();
+  if (byAuth.error) throw new Error(`Lookup user (auth) failed: ${byAuth.error.message}`);
+  if (byAuth.data) {
+    const row = byAuth.data as UserRow;
+    if (row.name !== trimmedName) {
+      const upd = await supabase
+        .from("competition_users")
+        .update({ name: trimmedName })
+        .eq("id", row.id)
+        .select()
+        .single();
+      if (upd.error || !upd.data) throw new Error(`Update user failed: ${upd.error?.message ?? "no row"}`);
+      return rowToUser(upd.data as UserRow);
+    }
+    return rowToUser(row);
+  }
+
+  const byEmail = await supabase
+    .from("competition_users")
+    .select()
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+  if (byEmail.error) throw new Error(`Lookup user (email) failed: ${byEmail.error.message}`);
+  if (byEmail.data) {
+    // Adopt the legacy row and tie it to this auth user from now on.
+    const adopt = await supabase
+      .from("competition_users")
+      .update({ auth_user_id: input.authUserId, name: trimmedName })
+      .eq("id", (byEmail.data as UserRow).id)
+      .select()
+      .single();
+    if (adopt.error || !adopt.data) throw new Error(`Adopt user failed: ${adopt.error?.message ?? "no row"}`);
+    return rowToUser(adopt.data as UserRow);
+  }
+
+  const inserted = await supabase
+    .from("competition_users")
+    .insert({ name: trimmedName, email: normalizedEmail, auth_user_id: input.authUserId })
+    .select()
+    .single();
+  if (inserted.error || !inserted.data) {
+    throw new Error(`Create user failed: ${inserted.error?.message ?? "no row"}`);
+  }
+  return rowToUser(inserted.data as UserRow);
+}
+
 export async function createOrFindCompetitionUser(name: string, email: string): Promise<CompetitionUser> {
   const supabase = getSupabaseServerClient();
   const normalizedEmail = email.trim().toLowerCase();

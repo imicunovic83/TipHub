@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { Match } from "@/lib/data";
 import type { CompetitionLeaderboardEntry } from "@/lib/competition";
 import { getSupabaseClient } from "@/lib/supabase";
@@ -38,9 +39,8 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [isLive, setIsLive] = useState(false);
+  const [authUser, setAuthUser] = useState<{ email: string; name: string } | null | undefined>(undefined);
   const [form, setForm] = useState({
-    name: "",
-    email: "",
     matchId: matches[0]?.id ?? "",
     market: MARKET_OPTIONS[0],
     prediction: "",
@@ -52,6 +52,33 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
     fetchLeaderboard();
 
     const supabase = getSupabaseClient();
+
+    // Resolve auth state once on mount so the form can short-circuit to a
+    // "log in" CTA before we even try the API.
+    supabase.auth.getUser().then(({ data }) => {
+      const u = data.user;
+      if (!u || !u.email) {
+        setAuthUser(null);
+      } else {
+        const name =
+          (typeof u.user_metadata?.full_name === "string" && u.user_metadata.full_name.trim()) ||
+          u.email.split("@")[0];
+        setAuthUser({ email: u.email, name });
+      }
+    }).catch(() => setAuthUser(null));
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const u = session?.user;
+      if (!u || !u.email) {
+        setAuthUser(null);
+        return;
+      }
+      const name =
+        (typeof u.user_metadata?.full_name === "string" && u.user_metadata.full_name.trim()) ||
+        u.email.split("@")[0];
+      setAuthUser({ email: u.email, name });
+    });
+
     const channel = supabase
       .channel("competition-leaderboard")
       .on(
@@ -66,6 +93,7 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
       });
 
     return () => {
+      sub.subscription.unsubscribe();
       supabase.removeChannel(channel);
     };
   }, []);
@@ -86,9 +114,8 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
       const response = await fetch("/api/competition", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
-          name: form.name,
-          email: form.email,
           matchId: form.matchId,
           market: form.market,
           prediction: form.prediction,
@@ -155,33 +182,31 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
 
       <div className="panel">
         <h3 className="title-section">Submit a community tip</h3>
-        <form className="stack" onSubmit={handleSubmit}>
-          <div className="grid-filters" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "1rem" }}>
-            <div className="field">
-              <label htmlFor="competitor-name" className="field-label">Name</label>
-              <input
-                id="competitor-name"
-                className="input"
-                value={form.name}
-                onChange={(event) => setForm({ ...form, name: event.target.value })}
-                placeholder="Your name"
-                required
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="competitor-email" className="field-label">Email</label>
-              <input
-                id="competitor-email"
-                className="input"
-                value={form.email}
-                onChange={(event) => setForm({ ...form, email: event.target.value })}
-                placeholder="your@email.com"
-                type="email"
-                required
-              />
+        <p className="text-muted-sm" style={{ marginTop: 0 }}>
+          Anyone with a TipHub account can submit a community pick — separate from
+          the tipster track. Tipsters publish to the catalog and have a public profile;
+          community submissions only count toward this leaderboard. If a public
+          tipster profile is what you want, <Link href="/tipster/apply" className="text-link">apply here</Link> instead.
+        </p>
+
+        {authUser === undefined ? (
+          <p className="text-muted-sm">Loading…</p>
+        ) : authUser === null ? (
+          <div className="surface" style={{ background: "var(--slate-100)", border: "1px dashed var(--border)" }}>
+            <p style={{ margin: 0 }}>
+              <strong>Log in to submit.</strong> Community submissions are tied to your account
+              so the leaderboard isn&apos;t open to spoofed entries.
+            </p>
+            <div className="row" style={{ gap: "0.625rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
+              <Link href="/login?next=/competition" className="btn btn-primary">Log in</Link>
+              <Link href="/register" className="btn btn-ghost">Create account</Link>
             </div>
           </div>
-
+        ) : (
+          <form className="stack" onSubmit={handleSubmit}>
+            <p className="text-muted-sm" style={{ margin: 0 }}>
+              Submitting as <strong>{authUser.name}</strong> ({authUser.email}).
+            </p>
           <div className="grid-filters" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "1rem" }}>
             <div className="field">
               <label htmlFor="competitor-match" className="field-label">Match</label>
@@ -265,7 +290,8 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
           <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? "Submitting…" : "Submit tip"}
           </button>
-        </form>
+          </form>
+        )}
       </div>
 
       <div className="panel">
