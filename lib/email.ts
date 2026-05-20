@@ -88,6 +88,29 @@ export async function sendApplicationApprovedEmail(opts: {
   await send(opts.to, "Your TipHub tipster application is approved", shell("You’re in", body));
 }
 
+export async function sendApplicationReceivedEmail(opts: {
+  to: string;
+  name: string;
+  specialty: string;
+}): Promise<void> {
+  const name = escapeHtml(opts.name);
+  const specialty = escapeHtml(opts.specialty);
+  const body = `<p style="margin:0 0 16px;line-height:1.5;font-size:15px;color:#334155;">
+              Thanks ${name} — we&apos;ve received your TipHub tipster application
+              (specialty: <strong>${specialty}</strong>) and it&apos;s now in the review queue.
+            </p>
+            <p style="margin:0 0 16px;line-height:1.5;font-size:15px;color:#334155;">
+              An admin reviews every application by hand. We aim to get back to you within
+              <strong>72 hours</strong> — you&apos;ll get an email either way, and if approved your
+              account is upgraded to tipster access automatically.
+            </p>
+            <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">
+              No action needed from you right now. While you wait, you can keep building a track
+              record in the community competition.
+            </p>`;
+  await send(opts.to, "We received your TipHub tipster application", shell("Application received", body));
+}
+
 export async function sendNewsletterConfirmation(opts: {
   to: string;
   token: string;

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createTipsterApplication, userHasOpenApplication } from "@/lib/applications";
 import { getAccessTokenFromRequest, getSupabaseUserFromToken } from "@/lib/supabase-server";
 import { isValidSpecialty } from "@/lib/tipster-specialties";
+import { sendApplicationReceivedEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
   const token = getAccessTokenFromRequest(request);
@@ -37,5 +38,19 @@ export async function POST(request: Request) {
   }
 
   const application = await createTipsterApplication(user.id, specialty, bio);
+
+  // Acknowledge receipt to the applicant. Fail-soft — a Resend hiccup (or the
+  // sandbox-sender restriction) must not break the application itself.
+  if (user.email) {
+    const applicantName =
+      (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
+      user.email.split("@")[0];
+    sendApplicationReceivedEmail({
+      to: user.email,
+      name: applicantName,
+      specialty: specialty.trim(),
+    }).catch((err) => console.error("[apply] received email failed:", err));
+  }
+
   return NextResponse.json({ success: true, application });
 }
