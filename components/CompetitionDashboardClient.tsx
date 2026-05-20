@@ -34,7 +34,7 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [isLive, setIsLive] = useState(false);
-  const [authUser, setAuthUser] = useState<{ email: string; name: string } | null | undefined>(undefined);
+  const [authUser, setAuthUser] = useState<{ email: string; name: string; role: string } | null | undefined>(undefined);
   const [form, setForm] = useState({
     matchId: matches[0]?.id ?? "",
     market: MARKET_OPTIONS[0],
@@ -56,28 +56,21 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
 
     // Resolve auth state once on mount so the form can short-circuit to a
     // "log in" CTA before we even try the API.
-    supabase.auth.getUser().then(({ data }) => {
-      const u = data.user;
-      if (!u || !u.email) {
-        setAuthUser(null);
-      } else {
-        const name =
-          (typeof u.user_metadata?.full_name === "string" && u.user_metadata.full_name.trim()) ||
-          u.email.split("@")[0];
-        setAuthUser({ email: u.email, name });
-      }
-    }).catch(() => setAuthUser(null));
+    const toAuthUser = (u: { email?: string; user_metadata?: Record<string, unknown> } | null | undefined) => {
+      if (!u || !u.email) return null;
+      const name =
+        (typeof u.user_metadata?.full_name === "string" && (u.user_metadata.full_name as string).trim()) ||
+        u.email.split("@")[0];
+      const role = typeof u.user_metadata?.role === "string" ? (u.user_metadata.role as string) : "member";
+      return { email: u.email, name, role };
+    };
+
+    supabase.auth.getUser()
+      .then(({ data }) => setAuthUser(toAuthUser(data.user)))
+      .catch(() => setAuthUser(null));
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      const u = session?.user;
-      if (!u || !u.email) {
-        setAuthUser(null);
-        return;
-      }
-      const name =
-        (typeof u.user_metadata?.full_name === "string" && u.user_metadata.full_name.trim()) ||
-        u.email.split("@")[0];
-      setAuthUser({ email: u.email, name });
+      setAuthUser(toAuthUser(session?.user));
     });
 
     const channel = supabase
@@ -142,6 +135,17 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
 
   const topFive = useMemo(() => leaderboard.slice(0, 5), [leaderboard]);
 
+  // The current user's own leaderboard standing (matched by email). Used to
+  // decide whether to surface the "you qualify — apply as tipster" nudge.
+  const myEntry = useMemo(
+    () => (authUser ? leaderboard.find((e) => e.email === authUser.email) : undefined),
+    [authUser, leaderboard],
+  );
+  const QUALIFYING_LEVELS = ["Pro", "Expert", "Legend"];
+  const isAlreadyTipster = authUser?.role === "tipster" || authUser?.role === "admin";
+  const showTipsterNudge =
+    !!myEntry && QUALIFYING_LEVELS.includes(myEntry.level) && !isAlreadyTipster;
+
   return (
     <div className="competition-grid">
       <div className="panel">
@@ -149,6 +153,24 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
           <p>
             Join the TipHub community challenge. Submit your own prediction on a scheduled match, and follow the leaderboard as your win rate and ROI earn you a new tipster level.
           </p>
+          <p className="text-muted-sm" style={{ margin: 0 }}>
+            <strong>Path to tipster:</strong> the community is the proving ground. Anyone can{" "}
+            <Link href="/tipster/apply" className="text-link">apply to be a tipster</Link> directly,
+            but a strong community track record (Pro level or above) is the cleanest way to show
+            you&apos;re ready for a public profile in the main tips catalog.
+          </p>
+
+          {showTipsterNudge ? (
+            <div className="surface" style={{ background: "var(--pitch-50, #ecfdf5)", border: "1px solid var(--pitch-200, #a7f3d0)" }}>
+              <p style={{ margin: 0 }}>
+                <strong>You&apos;re a {myEntry?.level}.</strong> Your community record qualifies you —
+                ready to post on the main catalog with a public profile?
+              </p>
+              <div style={{ marginTop: "0.75rem" }}>
+                <Link href="/tipster/apply" className="btn btn-primary">Apply as a tipster →</Link>
+              </div>
+            </div>
+          ) : null}
           <div className="competition-summary">
             <div className="competition-stat">
               <div className="competition-stat-name">Active competitors</div>

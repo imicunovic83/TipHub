@@ -95,6 +95,12 @@ export default async function TipsterApplicationPage() {
             ) : null}
 
             <div className="panel" style={{ marginTop: "2rem" }}>
+              <p className="text-muted-sm" style={{ marginTop: 0 }}>
+                New here and want to prove yourself first? Build a track record in the{" "}
+                <Link href="/competition" className="text-link">community competition</Link> — a strong
+                record (Pro level or above) makes for a much stronger application. You can also apply
+                directly below.
+              </p>
               <TipsterApplicationForm />
             </div>
           </>
