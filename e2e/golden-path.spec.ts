@@ -59,7 +59,8 @@ test("register → apply → admin approve → tipster dashboard", async ({ page
 
   // ---- Step 2: submit a tipster application via the UI ----
   await page.goto("/tipster/apply");
-  await page.getByLabel(/tipster specialty/i).fill("BTTS markets, low-block teams");
+  // Specialty is a fixed dropdown — select a valid option (free text rejected).
+  await page.getByLabel(/tipster specialty/i).selectOption("Both Teams to Score");
   await page
     .getByLabel(/tell us about yourself/i)
     .fill(

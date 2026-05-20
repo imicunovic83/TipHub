@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createTipsterApplication, userHasOpenApplication } from "@/lib/applications";
 import { getAccessTokenFromRequest, getSupabaseUserFromToken } from "@/lib/supabase-server";
+import { isValidSpecialty } from "@/lib/tipster-specialties";
 
 export async function POST(request: Request) {
   const token = getAccessTokenFromRequest(request);
@@ -23,6 +24,9 @@ export async function POST(request: Request) {
 
   if (!specialty?.trim() || !bio?.trim()) {
     return NextResponse.json({ error: "Specialty and bio are required." }, { status: 400 });
+  }
+  if (!isValidSpecialty(specialty.trim())) {
+    return NextResponse.json({ error: "Pick a specialty from the list." }, { status: 400 });
   }
 
   if (await userHasOpenApplication(user.id)) {
