@@ -9,6 +9,7 @@ Supabase SQL editor on a fresh project (or via `supabase migration`).
 create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
+  nickname text,
   favorite_tipster text,
   email text,
   avatar_url text,
@@ -37,6 +38,15 @@ run this once in the SQL Editor:
 
 ```sql
 alter table public.profiles add column if not exists avatar_url text;
+```
+
+### Migration: adding `nickname` to an existing project
+
+Public-facing display name (header, community leaderboard) so users
+don't have to expose their full name. Added 2026-05-20:
+
+```sql
+alter table public.profiles add column if not exists nickname text;
 ```
 
 ### Migration: linking competition_users to auth.users

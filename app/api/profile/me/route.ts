@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import {
   createSupabaseUserClient,
   getAccessTokenFromRequest,
+  getSupabaseServerClient,
   getSupabaseUserFromToken,
 } from "@/lib/supabase-server";
+import { getMergedTipsters } from "@/lib/merged-data";
 
-const MAX_FAV = 80;
+const MAX_NICKNAME = 40;
 
 export async function POST(request: Request) {
   const token = getAccessTokenFromRequest(request);
@@ -20,19 +22,38 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const favoriteTipster = typeof body.favorite_tipster === "string" ? body.favorite_tipster.trim() : "";
+  const nickname = typeof body.nickname === "string" ? body.nickname.trim() : "";
+  const favoriteTipster =
+    typeof body.favorite_tipster === "string" ? body.favorite_tipster.trim() : "";
 
-  if (favoriteTipster.length > MAX_FAV) {
-    return NextResponse.json({ error: `Favorite tipster must be ${MAX_FAV} characters or fewer.` }, { status: 400 });
+  if (nickname.length > MAX_NICKNAME) {
+    return NextResponse.json(
+      { error: `Nickname must be ${MAX_NICKNAME} characters or fewer.` },
+      { status: 400 },
+    );
+  }
+
+  // favorite_tipster, when set, must be a real tipster slug — no free text.
+  if (favoriteTipster) {
+    const tipsters = await getMergedTipsters();
+    const known = tipsters.some((t) => t.slug === favoriteTipster);
+    if (!known) {
+      return NextResponse.json(
+        { error: "Pick a tipster from the list." },
+        { status: 400 },
+      );
+    }
   }
 
   // User-scoped client — RLS only lets a user touch their own profiles row.
-  // Full name is intentionally NOT editable here (account-identity field;
-  // change requires manual support review during beta).
+  // Full name + email stay non-editable here (account-identity fields).
   const supabase = createSupabaseUserClient(token);
   const { data, error } = await supabase
     .from("profiles")
-    .update({ favorite_tipster: favoriteTipster || null })
+    .update({
+      nickname: nickname || null,
+      favorite_tipster: favoriteTipster || null,
+    })
     .eq("id", user.id)
     .select()
     .single();
@@ -43,6 +64,21 @@ export async function POST(request: Request) {
       { error: "Could not save profile. Please try again." },
       { status: 500 },
     );
+  }
+
+  // Mirror the nickname into user_metadata so the header (which reads the JWT
+  // client-side) shows it without an extra profile fetch. Service role needed
+  // for the admin update; non-fatal if it fails.
+  const nextMeta = { ...(user.user_metadata ?? {}), nickname: nickname || null };
+  const admin = getSupabaseServerClient();
+  const metaUpd = await admin.auth.admin.updateUserById(user.id, { user_metadata: nextMeta });
+  if (metaUpd.error) {
+    console.error("[profile/me] user_metadata mirror failed:", metaUpd.error);
+    return NextResponse.json({
+      success: true,
+      profile: data,
+      warning: "Saved, but the header may show your old name until you refresh.",
+    });
   }
 
   return NextResponse.json({ success: true, profile: data });

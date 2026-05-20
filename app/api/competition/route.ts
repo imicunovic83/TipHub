@@ -54,6 +54,7 @@ export async function POST(request: Request) {
   const odds = deriveCompetitionOdds(matchId, market, prediction);
 
   const displayName =
+    (typeof user.user_metadata?.nickname === "string" && user.user_metadata.nickname.trim()) ||
     (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
     user.email.split("@")[0];
 

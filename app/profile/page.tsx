@@ -7,6 +7,7 @@ import AvatarPicker from "@/components/AvatarPicker";
 import AccountEditForm from "@/components/AccountEditForm";
 import ChangePasswordForm from "@/components/ChangePasswordForm";
 import { createSupabaseUserClient, getSupabaseUserFromToken, ACCESS_TOKEN_COOKIE } from "@/lib/supabase-server";
+import { getMergedTipsters } from "@/lib/merged-data";
 
 export default async function ProfilePage() {
   const cookieStore = await cookies();
@@ -29,6 +30,12 @@ export default async function ProfilePage() {
 
   const currentAvatar = profile?.avatar_url ?? user.user_metadata?.avatar_url ?? null;
   const initialFavoriteTipster = profile?.favorite_tipster ?? "";
+  const initialNickname = profile?.nickname ?? "";
+
+  const tipsters = await getMergedTipsters();
+  const tipsterOptions = tipsters.map((t) => ({ slug: t.slug, name: t.name }));
+  const favoriteTipsterName =
+    tipsters.find((t) => t.slug === profile?.favorite_tipster)?.name ?? null;
 
   return (
     <section className="pad-section">
@@ -46,7 +53,7 @@ export default async function ProfilePage() {
                 </div>
               )}
               <div>
-                <h3 style={{ margin: 0 }}>{profile?.full_name ?? user.user_metadata?.full_name ?? user.email}</h3>
+                <h3 style={{ margin: 0 }}>{profile?.nickname?.trim() || profile?.full_name || user.user_metadata?.full_name || user.email}</h3>
                 <p className="text-muted-sm" style={{ margin: 0 }}>{user.email}</p>
               </div>
             </div>
@@ -60,12 +67,16 @@ export default async function ProfilePage() {
                     <dd>{profile.full_name?.trim() || <span className="text-muted-sm">Not set</span>}</dd>
                   </div>
                   <div className="profile-detail-row">
+                    <dt>Nickname</dt>
+                    <dd>{profile.nickname?.trim() || <span className="text-muted-sm">Not set</span>}</dd>
+                  </div>
+                  <div className="profile-detail-row">
                     <dt>Email</dt>
                     <dd>{profile.email ?? user.email}</dd>
                   </div>
                   <div className="profile-detail-row">
                     <dt>Favorite tipster</dt>
-                    <dd>{profile.favorite_tipster?.trim() || <span className="text-muted-sm">None yet</span>}</dd>
+                    <dd>{favoriteTipsterName || <span className="text-muted-sm">None yet</span>}</dd>
                   </div>
                   <div className="profile-detail-row">
                     <dt>Member since</dt>
@@ -108,7 +119,10 @@ export default async function ProfilePage() {
 
         <div className="surface" style={{ marginTop: "1.5rem" }}>
           <h4 className="surface-title">Account details</h4>
-          <AccountEditForm initial={{ favoriteTipster: initialFavoriteTipster }} />
+          <AccountEditForm
+            initial={{ nickname: initialNickname, favoriteTipster: initialFavoriteTipster }}
+            tipsters={tipsterOptions}
+          />
         </div>
 
         <div className="surface" style={{ marginTop: "1.5rem" }}>

@@ -260,6 +260,10 @@ export default function AuthControls() {
   }
 
   const name = user.user_metadata?.full_name ?? user.email ?? "User";
+  // Prefer a nickname (shown whole) for privacy; otherwise the first name.
+  const nickname =
+    typeof user.user_metadata?.nickname === "string" ? user.user_metadata.nickname.trim() : "";
+  const displayName = nickname || String(name).split(" ")[0];
   const avatar = user.user_metadata?.avatar_url ?? null;
   const email = (user.email ?? "").toString().trim().toLowerCase();
   const gravatar = email ? `https://www.gravatar.com/avatar/${md5(email)}?s=128&d=identicon` : null;
@@ -280,7 +284,7 @@ export default function AuthControls() {
           alt={name}
           style={{ width: 32, height: 32, borderRadius: 999, objectFit: "cover", marginRight: 8 }}
         />
-        <span className="text-muted-sm">{String(name).split(" ")[0]}</span>
+        <span className="text-muted-sm">{displayName}</span>
       </Link>
       {(user.user_metadata?.role === "tipster" || user.user_metadata?.role === "admin") ? (
         <Link href="/tipster/dashboard" className="btn btn-link" style={{ marginLeft: "0.5rem" }}>My tips</Link>
