@@ -5,14 +5,9 @@ import Link from "next/link";
 import { Match } from "@/lib/data";
 import type { CompetitionLeaderboardEntry } from "@/lib/competition";
 import { getSupabaseClient } from "@/lib/supabase";
+import { PREDICTION_OPTIONS, deriveCompetitionOdds } from "@/lib/competition-markets";
 
-const MARKET_OPTIONS = [
-  "1X2",
-  "Over/Under 2.5",
-  "BTTS",
-  "Asian Handicap",
-  "Correct Score",
-];
+const MARKET_OPTIONS = Object.keys(PREDICTION_OPTIONS);
 
 function formatMatchLabel(match: Match) {
   return `${match.group} · ${match.homeCode} vs ${match.awayCode}`;
@@ -43,10 +38,16 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
   const [form, setForm] = useState({
     matchId: matches[0]?.id ?? "",
     market: MARKET_OPTIONS[0],
-    prediction: "",
-    odds: 1.8,
+    prediction: PREDICTION_OPTIONS[MARKET_OPTIONS[0]][0],
     stake: 10,
   });
+
+  // Odds are derived from the selection, not entered — same value the server
+  // will compute and store, shown read-only so the competitor sees it upfront.
+  const derivedOdds = useMemo(
+    () => deriveCompetitionOdds(form.matchId, form.market, form.prediction),
+    [form.matchId, form.market, form.prediction],
+  );
 
   useEffect(() => {
     fetchLeaderboard();
@@ -119,7 +120,6 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
           matchId: form.matchId,
           market: form.market,
           prediction: form.prediction,
-          odds: Number(form.odds),
           stake: Number(form.stake),
         }),
       });
@@ -131,7 +131,7 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
         setStatus({ type: "success", message: "Tip successfully submitted. Your level is updated as results arrive." });
         setLeaderboard(result.leaderboard ?? []);
         setSubmissions((prev) => prev + 1);
-        setForm((prev) => ({ ...prev, prediction: "", odds: 1.8, stake: 10 }));
+        setForm((prev) => ({ ...prev, stake: 10 }));
       }
     } catch (error) {
       setStatus({ type: "error", message: "Network error while submitting tip." });
@@ -229,7 +229,15 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
                 id="competitor-market"
                 className="select"
                 value={form.market}
-                onChange={(event) => setForm({ ...form, market: event.target.value })}
+                onChange={(event) => {
+                  const market = event.target.value;
+                  // Reset prediction to a valid option for the new market.
+                  setForm((prev) => ({
+                    ...prev,
+                    market,
+                    prediction: PREDICTION_OPTIONS[market]?.[0] ?? "",
+                  }));
+                }}
               >
                 {MARKET_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -242,28 +250,32 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
 
           <div className="field">
             <label htmlFor="competitor-prediction" className="field-label">Prediction</label>
-            <input
+            <select
               id="competitor-prediction"
-              className="input"
+              className="select"
               value={form.prediction}
               onChange={(event) => setForm({ ...form, prediction: event.target.value })}
-              placeholder="Enter your pick"
               required
-            />
+            >
+              {(PREDICTION_OPTIONS[form.market] ?? []).map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="grid-filters" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "1rem" }}>
             <div className="field">
-              <label htmlFor="competitor-odds" className="field-label">Odds</label>
+              <label htmlFor="competitor-odds" className="field-label">Odds (fixed)</label>
               <input
                 id="competitor-odds"
                 className="input"
-                type="number"
-                min="1.01"
-                step="0.01"
-                value={form.odds}
-                onChange={(event) => setForm({ ...form, odds: Number(event.target.value) })}
-                required
+                type="text"
+                value={derivedOdds.toFixed(2)}
+                readOnly
+                aria-readonly="true"
+                title="Reference odds for this selection — set automatically, not editable"
               />
             </div>
             <div className="field">
