@@ -27,11 +27,11 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { matchId, market, prediction, stake } = body as {
+  const { matchId, market, prediction, confidence } = body as {
     matchId?: string;
     market?: string;
     prediction?: string;
-    stake?: number;
+    confidence?: number;
   };
 
   if (!matchId?.trim() || !market?.trim() || !prediction?.trim()) {
@@ -45,9 +45,15 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  if (typeof stake !== "number" || stake <= 0) {
-    return NextResponse.json({ error: "Stake must be a positive number." }, { status: 400 });
+  // Confidence is a bounded 1-10 scale that doubles as the stake — replaces the
+  // old free-form stake so the leaderboard can't be gamed with a huge wager.
+  if (!Number.isInteger(confidence) || (confidence as number) < 1 || (confidence as number) > 10) {
+    return NextResponse.json(
+      { error: "Confidence must be a whole number from 1 to 10." },
+      { status: 400 },
+    );
   }
+  const stake = confidence as number;
 
   // Odds are derived server-side from the selection — never trusted from the
   // client, so a competitor can't inflate their ROI by sending custom odds.

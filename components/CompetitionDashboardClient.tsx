@@ -39,7 +39,7 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
     matchId: matches[0]?.id ?? "",
     market: MARKET_OPTIONS[0],
     prediction: PREDICTION_OPTIONS[MARKET_OPTIONS[0]][0],
-    stake: 10,
+    confidence: 5,
   });
 
   // Odds are derived from the selection, not entered — same value the server
@@ -120,7 +120,7 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
           matchId: form.matchId,
           market: form.market,
           prediction: form.prediction,
-          stake: Number(form.stake),
+          confidence: Number(form.confidence),
         }),
       });
 
@@ -131,7 +131,7 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
         setStatus({ type: "success", message: "Tip successfully submitted. Your level is updated as results arrive." });
         setLeaderboard(result.leaderboard ?? []);
         setSubmissions((prev) => prev + 1);
-        setForm((prev) => ({ ...prev, stake: 10 }));
+        setForm((prev) => ({ ...prev, confidence: 5 }));
       }
     } catch (error) {
       setStatus({ type: "error", message: "Network error while submitting tip." });
@@ -279,19 +279,26 @@ export default function CompetitionDashboardClient({ matches }: { matches: Match
               />
             </div>
             <div className="field">
-              <label htmlFor="competitor-stake" className="field-label">Stake</label>
-              <input
-                id="competitor-stake"
-                className="input"
-                type="number"
-                min="1"
-                step="1"
-                value={form.stake}
-                onChange={(event) => setForm({ ...form, stake: Number(event.target.value) })}
+              <label htmlFor="competitor-confidence" className="field-label">
+                Confidence (1-10)
+              </label>
+              <select
+                id="competitor-confidence"
+                className="select"
+                value={form.confidence}
+                onChange={(event) => setForm({ ...form, confidence: Number(event.target.value) })}
                 required
-              />
+              >
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>{n}/10</option>
+                ))}
+              </select>
             </div>
           </div>
+          <p className="text-muted-sm" style={{ margin: 0 }}>
+            How strongly you back this pick — acts as your stake. Higher confidence on a winner
+            earns more; on a miss it costs more, so be honest with yourself.
+          </p>
 
           {status ? (
             <div className={status.type === "success" ? "badge badge--pitch" : "badge badge--rose"}>
