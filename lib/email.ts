@@ -18,7 +18,7 @@ function shell(headline: string, bodyHtml: string): string {
         <tr>
           <td style="padding:32px;background:linear-gradient(135deg,#064e3b,#047857);color:#ffffff;">
             <h1 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-0.01em;">TipHub</h1>
-            <p style="margin:8px 0 0;color:#a7f3d0;font-size:14px;">World Cup 2026 expert predictions</p>
+            <p style="margin:8px 0 0;color:#6ee7b7;font-size:14px;font-weight:600;">World Cup 2026 expert predictions</p>
           </td>
         </tr>
         <tr>
@@ -101,7 +101,7 @@ export async function sendApplicationReceivedEmail(opts: {
             </p>
             <p style="margin:0 0 16px;line-height:1.5;font-size:15px;color:#334155;">
               An admin reviews every application by hand. We aim to get back to you within
-              <strong>72 hours</strong> — you&apos;ll get an email either way, and if approved your
+              <strong>24 hours</strong> — you&apos;ll get an email either way, and if approved your
               account is upgraded to tipster access automatically.
             </p>
             <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">
