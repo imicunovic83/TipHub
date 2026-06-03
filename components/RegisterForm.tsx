@@ -50,6 +50,11 @@ export default function RegisterForm() {
       email: form.email,
       password: form.password,
       options: {
+        // Use the current host so the confirmation link lands on /auth/callback
+        // of whichever environment the user signed up on (localhost in dev,
+        // tip-hub-one.vercel.app in beta, tiphub.rs after launch). Bypasses
+        // the Supabase project's "Site URL" default which can fall behind.
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: {
           full_name: fullName,
           favorite_tipster: form.favoriteTipster || null,
