@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
 import type { MatchOption, BookmakerOption } from "@/components/NewTipForm";
+import { PREDICTION_OPTIONS, deriveBookmakerOdds } from "@/lib/competition-markets";
 
 type Status = "pending" | "won" | "lost";
 
@@ -209,7 +210,14 @@ function EditTipPanel({
           </div>
           <div className="field">
             <label className="field-label">Market</label>
-            <select className="select" value={form.market} onChange={(e) => setForm({ ...form, market: e.target.value })}>
+            <select
+              className="select"
+              value={form.market}
+              onChange={(e) => {
+                const market = e.target.value;
+                setForm({ ...form, market, prediction: PREDICTION_OPTIONS[market]?.[0] ?? "" });
+              }}
+            >
               {MARKETS.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>
           </div>
@@ -217,7 +225,11 @@ function EditTipPanel({
 
         <div className="field">
           <label className="field-label">Prediction</label>
-          <input className="input" value={form.prediction} onChange={(e) => setForm({ ...form, prediction: e.target.value })} />
+          <select className="select" value={form.prediction} onChange={(e) => setForm({ ...form, prediction: e.target.value })}>
+            {(PREDICTION_OPTIONS[form.market] ?? []).map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
         </div>
 
         <div className="field">
@@ -232,8 +244,15 @@ function EditTipPanel({
 
         <div className="grid-filters" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "1rem" }}>
           <div className="field">
-            <label className="field-label">Odds</label>
-            <input type="number" step="0.01" min="1.01" className="input" value={form.oddsValue} onChange={(e) => setForm({ ...form, oddsValue: Number(e.target.value) })} />
+            <label className="field-label">Odds (fixed by bookmaker)</label>
+            <input
+              type="text"
+              className="input"
+              value={deriveBookmakerOdds(form.matchId, form.market, form.prediction, form.oddsBookmaker).toFixed(2)}
+              readOnly
+              aria-readonly="true"
+              title="Reference odds for this selection at the chosen bookmaker — not editable."
+            />
           </div>
           <div className="field">
             <label className="field-label">Bookmaker</label>

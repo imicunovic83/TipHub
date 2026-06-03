@@ -57,3 +57,26 @@ export function deriveCompetitionOdds(matchId: string, market: string, predictio
   // Round to the nearest 0.05 like a real coupon.
   return Math.round(value * 20) / 20;
 }
+
+// Per-bookmaker price spread. Same matchId + market + prediction yields a
+// stable offset per book — so the catalog can show real "best @ X" without
+// us having a live odds feed yet. Replace with affiliate XML data later.
+const BOOKMAKER_FACTOR: Record<string, number> = {
+  mozzart: 1.00,
+  maxbet: 0.98,
+  soccerbet: 1.02,
+  meridian: 0.99,
+  admiral: 1.01,
+};
+
+export function deriveBookmakerOdds(
+  matchId: string,
+  market: string,
+  prediction: string,
+  bookmakerSlug: string,
+): number {
+  const base = deriveCompetitionOdds(matchId, market, prediction);
+  const factor = BOOKMAKER_FACTOR[bookmakerSlug] ?? 1.0;
+  const value = Math.max(1.01, base * factor);
+  return Math.round(value * 20) / 20;
+}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
+import { PREDICTION_OPTIONS, deriveBookmakerOdds } from "@/lib/competition-markets";
 
 const MARKETS = ["1X2", "Over/Under 2.5", "BTTS", "Asian Handicap", "Correct Score"] as const;
 const CONFIDENCES = [1, 2, 3, 4, 5] as const;
@@ -28,13 +29,19 @@ export default function NewTipForm({
   const [form, setForm] = useState({
     matchId: matches[0]?.id ?? "",
     market: MARKETS[0] as (typeof MARKETS)[number],
-    prediction: "",
+    prediction: PREDICTION_OPTIONS[MARKETS[0]][0] ?? "",
     shortReason: "",
     analysis: "",
-    oddsValue: 1.9,
     oddsBookmaker: bookmakers[0]?.slug ?? "",
     confidence: 3 as (typeof CONFIDENCES)[number],
   });
+
+  // Reference odds for this (match, market, prediction, bookmaker) — locked,
+  // not editable. Mirrors the server-side derivation that the API enforces.
+  const derivedOdds = useMemo(
+    () => deriveBookmakerOdds(form.matchId, form.market, form.prediction, form.oddsBookmaker),
+    [form.matchId, form.market, form.prediction, form.oddsBookmaker],
+  );
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -63,7 +70,12 @@ export default function NewTipForm({
       setStatus({ type: "error", message: data.error || "Failed to post tip." });
     } else {
       setStatus({ type: "success", message: "Tip posted. It's pending until an admin resolves it." });
-      setForm((prev) => ({ ...prev, prediction: "", shortReason: "", analysis: "" }));
+      setForm((prev) => ({
+        ...prev,
+        prediction: PREDICTION_OPTIONS[prev.market][0] ?? "",
+        shortReason: "",
+        analysis: "",
+      }));
       router.refresh();
     }
 
@@ -93,7 +105,15 @@ export default function NewTipForm({
             id="tip-market"
             className="select"
             value={form.market}
-            onChange={(event) => setForm({ ...form, market: event.target.value as typeof form.market })}
+            onChange={(event) => {
+              const market = event.target.value as typeof form.market;
+              // Reset prediction to a valid option for the new market.
+              setForm((prev) => ({
+                ...prev,
+                market,
+                prediction: PREDICTION_OPTIONS[market][0] ?? "",
+              }));
+            }}
           >
             {MARKETS.map((m) => <option key={m} value={m}>{m}</option>)}
           </select>
@@ -102,14 +122,17 @@ export default function NewTipForm({
 
       <div className="field">
         <label htmlFor="tip-prediction" className="field-label">Prediction</label>
-        <input
+        <select
           id="tip-prediction"
-          className="input"
+          className="select"
           value={form.prediction}
           onChange={(event) => setForm({ ...form, prediction: event.target.value })}
-          placeholder='e.g. "Argentina to win" or "Over 2.5 goals"'
           required
-        />
+        >
+          {(PREDICTION_OPTIONS[form.market] ?? []).map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
       </div>
 
       <div className="field">
@@ -138,16 +161,15 @@ export default function NewTipForm({
 
       <div className="grid-filters" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "1rem" }}>
         <div className="field">
-          <label htmlFor="tip-odds" className="field-label">Odds</label>
+          <label htmlFor="tip-odds" className="field-label">Odds (fixed by bookmaker)</label>
           <input
             id="tip-odds"
-            type="number"
-            step="0.01"
-            min="1.01"
+            type="text"
             className="input"
-            value={form.oddsValue}
-            onChange={(event) => setForm({ ...form, oddsValue: Number(event.target.value) })}
-            required
+            value={derivedOdds.toFixed(2)}
+            readOnly
+            aria-readonly="true"
+            title="Reference odds for this selection at the chosen bookmaker — not editable. Live affiliate feed integration is on the roadmap."
           />
         </div>
         <div className="field">
